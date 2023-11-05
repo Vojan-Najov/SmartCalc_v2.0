@@ -13,6 +13,8 @@ namespace s21 {
 
 class Calculator final {
  public:
+	//std::string calculate_expr(const char *str);
+	//...         calculate_graph(...);
   std::string Execute(const char *str);
   int BuildGraph(std::pair<size_t, double *> &graph);
 

@@ -1,56 +1,113 @@
-#ifndef MODEL_TOKEN_H_
-#define MODEL_TOKEN_H_
+#ifndef CALC_TOKEN_H_
+#define CALC_TOKEN_H_
 
-namespace s21 {
-
-enum class TokenType {
-  kWrong = -1,
-  kEmpty = 0,
-  kAssign = 1,
-  kNumber = 2,
-  kVar = 3,
-  kUnaryOp = 4,
-  kBinaryOp = 5,
-  kFunction = 6,
-  kLeftBracket = 7,
-  kRightBracket = 8
+enum class TokenType
+{
+	WRONG_TOKEN = -1,
+	EMPTY_TOKEN = 0,
+	DEFINITION_TOKEN,
+	NUMBER_TOKEN,
+	VAR_TOKEN,
+	UNARY_OP_TOKEN,
+	BINARY_OP_TOKEN,
+	LEFT_BRACKET_TOKEN,
+	RIGHT_BRACKET_TOKEN
 };
 
-enum class UnaryOperator { kMinus = 1, kPlus = 2 };
-
-enum class BinaryOperator {
-  kAdd = 1,
-  kSub = 2,
-  kMul = 3,
-  kDiv = 4,
-  kMod = 5,
-  kPow = 6
+class AToken
+{
+ public:
+	TokenType type(void) const noexcept = 0;
+	~AToken(void) = 0;
 };
 
-enum class FunctionOperator {
-  kCos = 1,
-  kSin = 2,
-  kTan = 3,
-  kAcos = 4,
-  kAsin = 5,
-  kAtan = 6,
-  kSqrt = 7,
-  kLn = 8,
-  kLog = 9,
-  kF = 10
+class WrongToken : AToken
+{
+ public:
+	TokenType type(void) const noexcept override;
 };
 
-struct Token {
-  TokenType type;
-  union {
-    double num;
-    UnaryOperator unop;
-    BinaryOperator biop;
-    FunctionOperator func;
-    int error;
-  } value;
+class EmptyToken : AToken
+{
+ public:
+	TokenType type(void) const noexcept overrife;
 };
 
-}  // namespace s21
+class DefinitionToken : AToken
+{
+ public:
+	TokenType type(void) const noexcept override;
+};
 
-#endif  // MODEL_TOKEN_H_
+class NumberToken : AToken
+{
+ public:
+	explicit NumberToken(const double &value) noexcept;
+
+	TokenType type(void) const noexcept override;
+
+	const double &value(void) const noexcept;
+
+ private:
+	double value_;
+};
+
+class UnaryOpToken: AToken
+{
+ public:
+	using UnaryOp = double (*)(double);
+
+	UnaryOpToken(UnaryOp func) noexcept;
+
+	TokenType type(void) const override;
+
+	NumberToken *apply(const AToken &token) const;
+
+ private:
+	UnaryOp func_;
+};
+
+class BinaryOpToken : AToken
+{
+ public:
+	using BinaryOp = double (*)(double, double);
+
+	BinaryOpToken(BinaryOp func) noexcept;
+
+	TokenType type(void) const noexcept override;
+
+	NumberToken *apply(const AToken &lhs, const AToken &rhs) const;
+
+ private:
+	BinaryOp func_;
+};
+
+class LeftBracketToken : AToken
+{
+ public:
+	TokenType type(void) const noexcept override { return LEFT_BRACKET_TOKEN; }
+};
+
+class RightBracketToken : AToken
+{
+ public:
+	TokenType type(void) const noexcept override { return RIGHT_BRACKET_TOKEN; }
+};
+
+/*
+template <typename Tp>
+class VarToken : AToken
+{
+ public:
+	TokenType type(void) const noexcept override;
+
+	const Tp &value(void) const noexcept { return var.value(); }
+
+ private:
+	Variable<Tp> var; 
+};
+*/
+
+
+
+#endif  // CALC_TOKEN_H_

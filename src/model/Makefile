@@ -13,9 +13,7 @@ SRC_DIR = .
 OBJ_DIR = ${SRC_DIR}/obj
 
 INCLUDE = $(wildcard ${INCLUDE_DIR}/*.h)
-
 SRC = $(wildcard ${SRC_DIR}/*.cc)
-
 OBJ = $(addprefix ${OBJ_DIR}/, $(notdir ${SRC:.cc=.o}))
 
 ${TARGET}: ${OBJ}

@@ -1,4 +1,4 @@
-TARGET = libscmodel.a
+TARGET = libsmartcalc.a
 TEST = test
 
 CXX = g++
@@ -35,7 +35,7 @@ ${OBJ_DIR}/%.o: ${SRC_DIR}/%.cc ${INCLUDE}
 	${MKDIR} ${@D}
 	${CXX} ${CXX_FLAGS} -I${INCLUDE_DIR} -o $@ -c $<
 
-${TEST_OBJ_DIR}/%.o: ${TEST_SRC_DIR}/%.cc
+${TEST_OBJ_DIR}/%.o: ${TEST_SRC_DIR}/%.cc ${INCLUDE}
 	${MKDIR} ${@D}
 	${CXX} ${CXX_FLAGS} -I${INCLUDE_DIR} -o $@ -c $<
 

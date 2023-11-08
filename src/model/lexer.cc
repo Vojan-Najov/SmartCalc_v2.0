@@ -4,57 +4,61 @@
 
 namespace s21 {
 
-namespace lexer {
+Lexer::Lexer(const char *str, std::string &errmsg) : str_(str), errmsg_(errmsg)
+{
+	while (std::isspace(*str_)) ++str_;
+}
 
-std::list<std::string> str_to_lexems(const char *str)
+bool Lexer::empty(void) noexcept
+{
+	return *str_ == '\0';
+}
+
+std::string Lexer::next(void)
 {
 	const char *end;
-	std::list<std::string> lexems;
-
-	while (std::isspace(*str)) {
-		++str;
-	}
-
-	while (*str) {
-    if (std::strchr("-+*/:^%()=;", *str) != nullptr) {
-			lexems.push_back(std::string{str, 1});
-			++str;
-		} else if (std::strncmp(str, "mod", 3) == 0) {
-			lexems.push_back(std::string{"%"});
-			str += 3;
-		} else {
-			end = str;
-			while (*end && !std::isspace(*end) &&
-             std::strchr("-+*/:^%()=;", *end) == nullptr &&
-             std::strncmp(end, "mod", 3) != 0) {
-			  ++end;
-			}
-			lexems.push_back(std::string{str, end});
-			str = end;
-		}
-
-		while (std::isspace(*str)) {
-			++str;
-		}
-	}
-
-	return lexems;
-}
-
-std::string lexems_to_string(const std::list<std::string> &lexems)
-{
-	std::string str;
-	std::list<std::string>::const_iterator it = lexems.cbegin();
-	std::list<std::string>::const_iterator last = lexems.cend();
-
-	for (; it != last; ++it) {
-		str += *it;
-	}
+	std::string lexem;
 	
-	return str;
+	while (std::isspace(*str_)) {
+		++str_;
+	}
+
+	if (*str_) {
+ 		if (std::strchr("-+*/^%()=", *str_) != nullptr) {
+			lexem = std::string(1, *str_);
+			++str_;
+		} else if (std::strncmp(str_, "mod", 3) == 0) {
+			lexem = std::string(1, '%');
+			str_ += 3;
+		} else {
+			end = str_;
+			while (*end && !std::isspace(*end) &&
+  	         std::strchr("-+*/:^%()=;", *end) == nullptr &&
+  	         std::strncmp(end, "mod", 3) != 0) {
+				++end;
+			}
+			lexem = std::string{str_, end};
+			if (!valid_lexem(lexem.c_str())) {
+				errmsg_ = std::string{"Smartcalc-v2.0: "} +
+									lexem + std::string{"invalid lexem."};
+			}
+			str_ = end;
+		}
+	}
+
+	while (std::isspace(*str_)) {
+		++str_;
+	}
+
+	return lexem;
 }
 
-} // namespace lexer
+bool Lexer::valid_lexem(const char *lexem)
+{
+	(void) lexem;
+	//if (std::isdigt(*lexem)) { }
+	return true;
+}
 
 } // namespace s21
 

@@ -3,7 +3,7 @@
 
 #include <string>
 
-// разделители - + * / : ^ % ( )  = mod ; \n
+// разделители - + * / ^ % ( ) = mod
 
 namespace s21 {
 

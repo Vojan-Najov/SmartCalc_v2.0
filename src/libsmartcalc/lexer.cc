@@ -9,6 +9,8 @@
 
 namespace s21 {
 
+namespace smartcalc {
+
 Lexer::Lexer(const char *expr) noexcept
     : expr_{expr}, prev_token_{TokenType::Empty} {
   while (std::isspace(*expr_)) {
@@ -23,32 +25,15 @@ AToken *Lexer::NextToken(void) {
 
   if (!*expr_) {
     token = new EmptyToken{};
-  } else if (*expr_ && std::strchr("-+*/^%()", *expr_) != nullptr) {
-    token = SingleCharacterLexem(*expr_);
-    ++expr_;
+  } else if (std::strchr("-+*/^%()", *expr_) != nullptr) {
+    token = SingleCharacterLexem();
   } else if (std::strncmp(expr_, "mod", 3) == 0) {
-    token = SingleCharacterLexem('%');
+    token = new BinaryOpToken{&binary_ops::module};
     expr_ += 3;
   } else if (std::isdigit(*expr_)) {
-    char *end{};
-    errno = 0;
-    double num = std::strtod(expr_, &end);
-    if (errno == ERANGE) {
-      token = new WrongToken(std::string(expr_, end - expr_) + ": huge value");
-      errno = 0;
-    } else {
-      token = new NumberToken{num};
-    }
-    expr_ = end;
+    token = NumericLexem();
   } else {
-    const char *end = expr_;
-    while (*end && !std::isspace(*end) &&
-           std::strchr("-+*/^%()", *end) == nullptr &&
-           std::strncmp(end, "mod", 3) != 0) {
-      ++end;
-    }
-    // token = MultiCharacterLexem(expr_, end);
-    expr_ = end;
+    token = MultiCharacterLexem();
   }
 
   prev_token_ = token->Type();
@@ -59,18 +44,18 @@ AToken *Lexer::NextToken(void) {
   return token;
 }
 
-AToken *Lexer::SingleCharacterLexem(char smb) const {
+AToken *Lexer::SingleCharacterLexem(void) {
   AToken *token = nullptr;
 
-  switch (smb) {
+  switch (*expr_) {
     case '-':
     case '+':
       if (prev_token_ == TokenType::Number) {
-        token = smb == '+' ? new BinaryOpToken{&binary_ops::sum}
-                           : new BinaryOpToken{&binary_ops::sub};
+        token = *expr_ == '+' ? new BinaryOpToken{&binary_ops::sum}
+                              : new BinaryOpToken{&binary_ops::sub};
       } else {
-        token = smb == '+' ? new UnaryOpToken{&unary_ops::plus}
-                           : new UnaryOpToken{&unary_ops::minus};
+        token = *expr_ == '+' ? new UnaryOpToken{&unary_ops::plus}
+                              : new UnaryOpToken{&unary_ops::minus};
       }
       break;
     case '*':
@@ -94,8 +79,65 @@ AToken *Lexer::SingleCharacterLexem(char smb) const {
     default:
       token = new WrongToken{"unknown unary op"};
   }
+  if (*expr_) {
+    ++expr_;
+  }
 
   return token;
 }
+
+AToken *Lexer::NumericLexem(void) {
+  AToken *token = nullptr;
+  char *end{};
+  errno = 0;
+  double num = std::strtod(expr_, &end);
+
+  if (errno == ERANGE) {
+    token = new WrongToken(std::string(expr_, end - expr_) + ": huge value");
+    errno = 0;
+  } else {
+    token = new NumberToken{num};
+  }
+  expr_ = end;
+
+  return token;
+}
+
+AToken *Lexer::MultiCharacterLexem(void) {
+  AToken *token = nullptr;
+  const char *end = expr_;
+  size_t n = 0;
+
+  while (*end && !std::isspace(*end) &&
+         std::strchr("-+*/^%()", *end) == nullptr &&
+         std::strncmp(end, "mod", 3) != 0) {
+    ++n;
+  }
+
+  if (n == 2 && std::strncmp(expr_, "ln", 2) == 0) {
+    token = new UnaryOpToken{&unary_ops::ln};
+  } else if (n == 3 && std::strncmp(expr_, "log", 3) == 0) {
+    token = new UnaryOpToken{&unary_ops::log};
+  } else if (n == 3 && std::strncmp(expr_, "sin", 3) == 0) {
+    token = new UnaryOpToken{&unary_ops::sin};
+  } else if (n == 3 && std::strncmp(expr_, "cos", 3) == 0) {
+    token = new UnaryOpToken{&unary_ops::cos};
+  } else if (n == 3 && std::strncmp(expr_, "tan", 3) == 0) {
+    token = new UnaryOpToken{&unary_ops::tan};
+  } else if (n == 4 && std::strncmp(expr_, "asin", 4) == 0) {
+    token = new UnaryOpToken{&unary_ops::asin};
+  } else if (n == 4 && std::strncmp(expr_, "acos", 4) == 0) {
+    token = new UnaryOpToken{&unary_ops::acos};
+  } else if (n == 4 && std::strncmp(expr_, "atan", 4) == 0) {
+    token = new UnaryOpToken{&unary_ops::atan};
+  } else {
+    token = new NameToken{expr_, n};
+  }
+  expr_ += n;
+
+  return token;
+}
+
+}  // namespace smartcalc
 
 }  // namespace s21

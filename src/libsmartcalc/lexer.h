@@ -7,6 +7,8 @@
 
 namespace s21 {
 
+namespace smartcalc {
+
 class Lexer final {
  public:
   Lexer(const char *expr) noexcept;
@@ -14,12 +16,16 @@ class Lexer final {
   AToken *NextToken(void);
 
  private:
-  AToken *SingleCharacterLexem(char smb) const;
+  AToken *SingleCharacterLexem(void);
+  AToken *NumericLexem(void);
+  AToken *MultiCharacterLexem(void);
 
  private:
   const char *expr_;
   TokenType prev_token_;
 };
+
+}  // namespace smartcalc
 
 }  // namespace s21
 

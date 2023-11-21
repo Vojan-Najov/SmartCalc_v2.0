@@ -59,3 +59,34 @@ TEST_F(LexerTest, HugeValueTest) {
 
 	delete token;
 }
+
+TEST_F(LexerTest, ExpressionTest01) {
+	Lexer lexer{"1 + 2"};
+	std::string arr[] = {std::to_string(1.0), "+", std::to_string(2.0)};
+
+	size_t i = 0;
+	for (; i < sizeof(arr) / sizeof(std::string) && !lexer.Empty(); ++i) {
+		AToken *token = lexer.NextToken();
+		EXPECT_EQ(arr[i], token->Dump());
+		delete token;
+	}
+
+	EXPECT_TRUE(lexer.Empty());
+	EXPECT_EQ(i, sizeof(arr) / sizeof(std::string));
+}
+
+TEST_F(LexerTest, ExpressionTest02) {
+	Lexer lexer{"-1 + 2"};
+	std::string arr[] = {"-", std::to_string(1.0), "+", std::to_string(2.0)};
+
+	size_t i = 0;
+	for (; i < sizeof(arr) / sizeof(std::string) && !lexer.Empty(); ++i) {
+		AToken *token = lexer.NextToken();
+		EXPECT_EQ(arr[i], token->Dump());
+		delete token;
+	}
+
+	EXPECT_TRUE(lexer.Empty());
+	EXPECT_EQ(i, sizeof(arr) / sizeof(std::string));
+}
+

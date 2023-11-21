@@ -4,6 +4,8 @@
 
 namespace s21 {
 
+namespace smartcalc {
+
 namespace unary_ops {
 
 AToken *plus(const AToken *token) {
@@ -16,6 +18,16 @@ AToken *minus(const AToken *token) {
   return new NumberToken{-num};
 }
 
+AToken *ln(const AToken *token) {
+  double num = static_cast<const AValue *>(token)->Value();
+  return new NumberToken{std::log(num)};
+}
+
+AToken *log(const AToken *token) {
+  double num = static_cast<const AValue *>(token)->Value();
+  return new NumberToken{std::log10(num)};
+}
+
 AToken *sin(const AToken *token) {
   double num = static_cast<const AValue *>(token)->Value();
   return new NumberToken{std::sin(num)};
@@ -23,7 +35,27 @@ AToken *sin(const AToken *token) {
 
 AToken *cos(const AToken *token) {
   double num = static_cast<const AValue *>(token)->Value();
-  return new NumberToken{std::sin(num)};
+  return new NumberToken{std::cos(num)};
+}
+
+AToken *tan(const AToken *token) {
+  double num = static_cast<const AValue *>(token)->Value();
+  return new NumberToken{std::tan(num)};
+}
+
+AToken *asin(const AToken *token) {
+  double num = static_cast<const AValue *>(token)->Value();
+  return new NumberToken{std::asin(num)};
+}
+
+AToken *acos(const AToken *token) {
+  double num = static_cast<const AValue *>(token)->Value();
+  return new NumberToken{std::acos(num)};
+}
+
+AToken *atan(const AToken *token) {
+  double num = static_cast<const AValue *>(token)->Value();
+  return new NumberToken{std::atan(num)};
 }
 
 }  // namespace unary_ops
@@ -67,5 +99,7 @@ AToken *module(const AToken *lhs, const AToken *rhs) {
 }
 
 }  // namespace binary_ops
+
+}  // namespace smartcalc
 
 }  // namespace s21

@@ -4,6 +4,8 @@
 
 namespace s21 {
 
+namespace smartcalc {
+
 // EMPTY TOKEN
 
 TokenType EmptyToken::Type(void) const noexcept { return TokenType::Empty; }
@@ -113,5 +115,19 @@ TokenType RightBracketToken::Type(void) const noexcept {
 std::string RightBracketToken::Dump(void) const { return std::string(")"); }
 
 RightBracketToken::~RightBracketToken(void) {}
+
+// NAME TOKEN
+
+NameToken::NameToken(const char *str, size_t n) : name_(str, n) {}
+
+TokenType NameToken::Type(void) const noexcept { return TokenType::Name; }
+
+std::string NameToken::Dump(void) const { return name_; }
+
+const char *NameToken::Name(void) const noexcept { return name_.c_str(); }
+
+NameToken::~NameToken(void) {}
+
+}  // namespace smartcalc
 
 }  // namespace s21

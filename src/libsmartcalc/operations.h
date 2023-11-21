@@ -5,12 +5,20 @@
 
 namespace s21 {
 
+namespace smartcalc {
+
 namespace unary_ops {
 
 AToken *plus(const AToken *token);
 AToken *minus(const AToken *token);
+AToken *ln(const AToken *token);
+AToken *log(const AToken *token);
 AToken *sin(const AToken *token);
 AToken *cos(const AToken *token);
+AToken *tan(const AToken *token);
+AToken *asin(const AToken *token);
+AToken *acos(const AToken *token);
+AToken *atan(const AToken *token);
 
 }  // namespace unary_ops
 
@@ -24,6 +32,8 @@ AToken *power(const AToken *lhs, const AToken *rhs);
 AToken *module(const AToken *lhs, const AToken *rhs);
 
 }  // namespace binary_ops
+
+}  // namespace smartcalc
 
 }  // namespace s21
 

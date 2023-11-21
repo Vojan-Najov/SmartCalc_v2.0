@@ -3,36 +3,42 @@
 
 #include "lexer.h"
 
+using Lexer = s21::smartcalc::Lexer;
+using AToken = s21::smartcalc::AToken;
+using NumberToken = s21::smartcalc::NumberToken;
+using WrongToken = s21::smartcalc::WrongToken;
+using TokenType = s21::smartcalc::TokenType;
+
 class LexerTest : public testing::Test {
 
 };
 
 TEST_F(LexerTest, EmptyString) {
-	s21::Lexer lexer{""};
+	Lexer lexer{""};
 	EXPECT_TRUE(lexer.Empty());
 
-	s21::AToken *token = lexer.NextToken();
-	EXPECT_EQ(token->Type(), s21::TokenType::Empty);
+	AToken *token = lexer.NextToken();
+	EXPECT_EQ(token->Type(), TokenType::Empty);
 	delete token;
 }
 
 TEST_F(LexerTest, SpaceString) {
-	s21::Lexer lexer{"    \t   \v    \n    \t\t    \n"};
+	Lexer lexer{"    \t   \v    \n    \t\t    \n"};
 	EXPECT_TRUE(lexer.Empty());
 
-	s21::AToken *token = lexer.NextToken();
-	EXPECT_EQ(token->Type(), s21::TokenType::Empty);
+	AToken *token = lexer.NextToken();
+	EXPECT_EQ(token->Type(), TokenType::Empty);
 	delete token;
 }
 
 TEST_F(LexerTest, NumberTest) {
-	s21::Lexer lexer{"        123         \n"};
+	Lexer lexer{"        123         \n"};
 	EXPECT_FALSE(lexer.Empty());
 
-	s21::AToken *token = lexer.NextToken();
-	EXPECT_EQ(token->Type(), s21::TokenType::Number);
+	AToken *token = lexer.NextToken();
+	EXPECT_EQ(token->Type(), TokenType::Number);
 
-	s21::NumberToken *num = static_cast<s21::NumberToken *>(token);
+	NumberToken *num = static_cast<NumberToken *>(token);
 	EXPECT_EQ(num->Value(), 123.0);
 
 	EXPECT_TRUE(lexer.Empty());
@@ -41,13 +47,13 @@ TEST_F(LexerTest, NumberTest) {
 }
 
 TEST_F(LexerTest, HugeValueTest) {
-	s21::Lexer lexer{"    1.18973e+4932    "};
+	Lexer lexer{"    1.18973e+4932    "};
 	EXPECT_FALSE(lexer.Empty());
 
-	s21::AToken *token = lexer.NextToken();
-	EXPECT_EQ(token->Type(), s21::TokenType::Wrong);
+	AToken *token = lexer.NextToken();
+	EXPECT_EQ(token->Type(), TokenType::Wrong);
 
-	std::cout << static_cast<s21::WrongToken*>(token)->errmsg << std::endl;
+	std::cout << static_cast<WrongToken*>(token)->errmsg << std::endl;
 
 	EXPECT_TRUE(lexer.Empty());
 

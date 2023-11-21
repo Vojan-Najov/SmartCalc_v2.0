@@ -3,11 +3,15 @@
 
 namespace s21 {
 
+namespace smartcalc {
+
 class Smartcalc final {
   double CalculateExpr(const char *expr);
   // ErrorStatus set_variable(const char *name, const char *expr);
   // ErrorStatus SetFunction(const char *name, const char *def);
 };
+
+}  // namespace smartcalc
 
 }  // namespace s21
 

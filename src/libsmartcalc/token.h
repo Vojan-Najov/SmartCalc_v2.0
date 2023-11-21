@@ -5,6 +5,8 @@
 
 namespace s21 {
 
+namespace smartcalc {
+
 enum class TokenType {
   Empty,
   Wrong,
@@ -16,6 +18,7 @@ enum class TokenType {
   // Func,
   LeftBracket,
   RightBracket,
+  Name,
 };
 
 class AToken {
@@ -104,16 +107,19 @@ class RightBracketToken : public AToken {
   ~RightBracketToken(void);
 };
 
-/*
-class NameToken : AToken {
+class NameToken : public AToken {
  public:
-        NameToken(const char *start, const char *end);
-        TokenType type(void) const noexcept override;
-        const char *name(void) const noexcept;
+  NameToken(const char *start, size_t n);
+  TokenType Type(void) const noexcept override;
+  std::string Dump(void) const override;
+  const char *Name(void) const noexcept;
+  ~NameToken(void);
+
  private:
-        std::string name_;
+  std::string name_;
 };
-*/
+
+}  // namespace smartcalc
 
 }  // namespace s21
 

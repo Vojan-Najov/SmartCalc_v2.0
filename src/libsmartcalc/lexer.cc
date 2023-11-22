@@ -50,7 +50,8 @@ AToken *Lexer::SingleCharacterLexem(void) {
   switch (*expr_) {
     case '-':
     case '+':
-      if (prev_token_ == TokenType::Number) {
+      if (prev_token_ == TokenType::Number || prev_token_ == TokenType::Name ||
+          prev_token_ == TokenType::RightBracket) {
         token = *expr_ == '+' ? new BinaryOpToken{&binary_ops::sum}
                               : new BinaryOpToken{&binary_ops::sub};
       } else {
@@ -106,30 +107,30 @@ AToken *Lexer::NumericLexem(void) {
 AToken *Lexer::MultiCharacterLexem(void) {
   AToken *token = nullptr;
   const char *end = expr_;
-  size_t n = 0;
 
   while (*end && !std::isspace(*end) &&
          std::strchr("-+*/^%()", *end) == nullptr &&
          std::strncmp(end, "mod", 3) != 0) {
-    ++n;
+    ++end;
   }
 
+	size_t n = end - expr_;
   if (n == 2 && std::strncmp(expr_, "ln", 2) == 0) {
-    token = new UnaryOpToken{&unary_ops::ln};
+    token = new FuncToken{&unary_ops::ln};
   } else if (n == 3 && std::strncmp(expr_, "log", 3) == 0) {
-    token = new UnaryOpToken{&unary_ops::log};
+    token = new FuncToken{&unary_ops::log};
   } else if (n == 3 && std::strncmp(expr_, "sin", 3) == 0) {
-    token = new UnaryOpToken{&unary_ops::sin};
+    token = new FuncToken{&unary_ops::sin};
   } else if (n == 3 && std::strncmp(expr_, "cos", 3) == 0) {
-    token = new UnaryOpToken{&unary_ops::cos};
+    token = new FuncToken{&unary_ops::cos};
   } else if (n == 3 && std::strncmp(expr_, "tan", 3) == 0) {
-    token = new UnaryOpToken{&unary_ops::tan};
+    token = new FuncToken{&unary_ops::tan};
   } else if (n == 4 && std::strncmp(expr_, "asin", 4) == 0) {
-    token = new UnaryOpToken{&unary_ops::asin};
+    token = new FuncToken{&unary_ops::asin};
   } else if (n == 4 && std::strncmp(expr_, "acos", 4) == 0) {
-    token = new UnaryOpToken{&unary_ops::acos};
+    token = new FuncToken{&unary_ops::acos};
   } else if (n == 4 && std::strncmp(expr_, "atan", 4) == 0) {
-    token = new UnaryOpToken{&unary_ops::atan};
+    token = new FuncToken{&unary_ops::atan};
   } else {
     token = new NameToken{expr_, n};
   }

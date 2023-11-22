@@ -2,6 +2,7 @@
 #define LIBSMARTCALC_TOKEN_H_
 
 #include <string>
+#include <iostream>
 
 namespace s21 {
 
@@ -10,12 +11,11 @@ namespace smartcalc {
 enum class TokenType {
   Empty,
   Wrong,
-  // Definition,
   Number,
   UnaryOp,
   BinaryOp,
   // Var,
-  // Func,
+  Function,
   LeftBracket,
   RightBracket,
   Name,
@@ -87,10 +87,27 @@ class BinaryOpToken : public AToken {
   TokenType Type(void) const noexcept override;
   std::string Dump(void) const override;
   AToken *Apply(const AToken *lhs, const AToken *rhs) const;
+	int Precedence(void) const noexcept;
+	bool LeftAssociative(void) const noexcept;
   ~BinaryOpToken(void);
 
  private:
   Binop binop_;
+};
+
+class FuncToken : public AToken {
+ public:
+  using Unop = AToken *(*)(const AToken *token);
+
+ public:
+  FuncToken(Unop unop) noexcept;
+  TokenType Type(void) const noexcept override;
+  std::string Dump(void) const override;
+  AToken *Apply(const AToken *token) const;
+  ~FuncToken(void);
+
+ private:
+  Unop unop_;
 };
 
 class LeftBracketToken : public AToken {
@@ -118,6 +135,10 @@ class NameToken : public AToken {
  private:
   std::string name_;
 };
+
+std::ostream &operator<<(std::ostream &out, TokenType type);
+
+
 
 }  // namespace smartcalc
 

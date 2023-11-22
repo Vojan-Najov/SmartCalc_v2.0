@@ -49,10 +49,6 @@ std::string UnaryOpToken::Dump(void) const {
     s = "+";
   } else if (unop_ == &unary_ops::minus) {
     s = "-";
-  } else if (unop_ == &unary_ops::sin) {
-    s = "sin";
-  } else if (unop_ == &unary_ops::cos) {
-    s = "cos";
   }
 
   return std::string(s);
@@ -94,7 +90,66 @@ AToken *BinaryOpToken::Apply(const AToken *lhs, const AToken *rhs) const {
   return binop_(lhs, rhs);
 }
 
+int BinaryOpToken::Precedence(void) const noexcept {
+	int prec = -1;
+
+	if (binop_ == &binary_ops::sum) {
+    prec = 1;
+  } else if (binop_ == &binary_ops::sub) {
+    prec = 1;
+  } else if (binop_ == &binary_ops::multiply) {
+    prec = 2;
+  } else if (binop_ == &binary_ops::devide) {
+    prec = 2;
+  } else if (binop_ == &binary_ops::power) {
+    prec = 2;
+  } else if (binop_ == &binary_ops::module) {
+    prec = 2;
+  }
+
+	return prec;
+}
+
+bool BinaryOpToken::LeftAssociative(void) const noexcept {
+  return binop_ == &binary_ops::power ? false : true;
+}
+
 BinaryOpToken::~BinaryOpToken() {}
+
+// Func TOKEN
+
+FuncToken::FuncToken(Unop unop) noexcept : unop_{unop} {}
+
+TokenType FuncToken::Type(void) const noexcept { return TokenType::Function; }
+
+std::string FuncToken::Dump(void) const {
+  const char *s = "unknow function";
+
+  if (unop_ == &unary_ops::sin) {
+    s = "sin";
+  } else if (unop_ == &unary_ops::cos) {
+    s = "cos";
+  } else if (unop_ == &unary_ops::tan) {
+    s = "tan";
+  } else if (unop_ == &unary_ops::asin) {
+    s = "asin";
+  } else if (unop_ == &unary_ops::acos) {
+    s = "acos";
+  } else if (unop_ == &unary_ops::atan) {
+    s = "atan";
+  } else if (unop_ == &unary_ops::ln) {
+    s = "ln";
+  } else if (unop_ == &unary_ops::log) {
+    s = "log";
+	}
+
+  return std::string(s);
+}
+
+AToken *FuncToken::Apply(const AToken *token) const { return unop_(token); }
+
+FuncToken::~FuncToken() {}
+
 
 // LEFT BRACKET TOKEN
 
@@ -127,6 +182,34 @@ std::string NameToken::Dump(void) const { return name_; }
 const char *NameToken::Name(void) const noexcept { return name_.c_str(); }
 
 NameToken::~NameToken(void) {}
+
+// OVERLOAD OPERATOR<< FOR OSTREAM
+
+std::ostream &operator<<(std::ostream &out, TokenType type) {
+	if (type == TokenType::Empty) {
+		out << "{TokenType:: empty}";
+	} else if (type == TokenType::Wrong) {
+		out << "{TokenType:: wrong}";
+	} else if (type == TokenType::Number) {
+		out << "{TokenType:: number}";
+	} else if (type == TokenType::UnaryOp) {
+		out << "{TokenType:: unary_op}";
+	} else if (type == TokenType::BinaryOp) {
+		out << "{TokenType:: binary_op}";
+	} else if (type == TokenType::Function) {
+		out << "{TokenType:: function}";
+	} else if (type == TokenType::LeftBracket) {
+		out << "{TokenType:: left_bracket}";
+	} else if (type == TokenType::RightBracket) {
+		out << "{TokenType:: right_bracket}";
+	} else if (type == TokenType::Name) {
+		out << "{TokenType:: name}";
+	} else {
+		out << "{TokenType:: unknown}";
+	}
+
+	return out;
+}
 
 }  // namespace smartcalc
 

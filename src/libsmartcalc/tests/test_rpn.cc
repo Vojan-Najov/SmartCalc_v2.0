@@ -18,6 +18,14 @@ class RpnTest : public testing::Test {
 
 };
 
+TEST_F(RpnTest, Expression00) {
+	Rpn rpn;
+
+	rpn.Push(new NumberToken{5.0});
+	rpn.Calculate();
+	EXPECT_EQ(rpn.Result(), 5.0);
+}
+
 TEST_F(RpnTest, Expression01) {
 	Rpn rpn;
 

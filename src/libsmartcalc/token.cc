@@ -91,9 +91,9 @@ AToken *BinaryOpToken::Apply(const AToken *lhs, const AToken *rhs) const {
 }
 
 int BinaryOpToken::Precedence(void) const noexcept {
-	int prec = -1;
+  int prec = -1;
 
-	if (binop_ == &binary_ops::sum) {
+  if (binop_ == &binary_ops::sum) {
     prec = 1;
   } else if (binop_ == &binary_ops::sub) {
     prec = 1;
@@ -107,7 +107,7 @@ int BinaryOpToken::Precedence(void) const noexcept {
     prec = 2;
   }
 
-	return prec;
+  return prec;
 }
 
 bool BinaryOpToken::LeftAssociative(void) const noexcept {
@@ -141,7 +141,7 @@ std::string FuncToken::Dump(void) const {
     s = "ln";
   } else if (unop_ == &unary_ops::log) {
     s = "log";
-	}
+  }
 
   return std::string(s);
 }
@@ -149,7 +149,6 @@ std::string FuncToken::Dump(void) const {
 AToken *FuncToken::Apply(const AToken *token) const { return unop_(token); }
 
 FuncToken::~FuncToken() {}
-
 
 // LEFT BRACKET TOKEN
 
@@ -186,29 +185,29 @@ NameToken::~NameToken(void) {}
 // OVERLOAD OPERATOR<< FOR OSTREAM
 
 std::ostream &operator<<(std::ostream &out, TokenType type) {
-	if (type == TokenType::Empty) {
-		out << "{TokenType:: empty}";
-	} else if (type == TokenType::Wrong) {
-		out << "{TokenType:: wrong}";
-	} else if (type == TokenType::Number) {
-		out << "{TokenType:: number}";
-	} else if (type == TokenType::UnaryOp) {
-		out << "{TokenType:: unary_op}";
-	} else if (type == TokenType::BinaryOp) {
-		out << "{TokenType:: binary_op}";
-	} else if (type == TokenType::Function) {
-		out << "{TokenType:: function}";
-	} else if (type == TokenType::LeftBracket) {
-		out << "{TokenType:: left_bracket}";
-	} else if (type == TokenType::RightBracket) {
-		out << "{TokenType:: right_bracket}";
-	} else if (type == TokenType::Name) {
-		out << "{TokenType:: name}";
-	} else {
-		out << "{TokenType:: unknown}";
-	}
+  if (type == TokenType::Empty) {
+    out << "{TokenType:: empty}";
+  } else if (type == TokenType::Wrong) {
+    out << "{TokenType:: wrong}";
+  } else if (type == TokenType::Number) {
+    out << "{TokenType:: number}";
+  } else if (type == TokenType::UnaryOp) {
+    out << "{TokenType:: unary_op}";
+  } else if (type == TokenType::BinaryOp) {
+    out << "{TokenType:: binary_op}";
+  } else if (type == TokenType::Function) {
+    out << "{TokenType:: function}";
+  } else if (type == TokenType::LeftBracket) {
+    out << "{TokenType:: left_bracket}";
+  } else if (type == TokenType::RightBracket) {
+    out << "{TokenType:: right_bracket}";
+  } else if (type == TokenType::Name) {
+    out << "{TokenType:: name}";
+  } else {
+    out << "{TokenType:: unknown}";
+  }
 
-	return out;
+  return out;
 }
 
 }  // namespace smartcalc

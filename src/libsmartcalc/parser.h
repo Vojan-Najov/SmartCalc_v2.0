@@ -13,35 +13,34 @@ namespace smartcalc {
 
 class Parser final {
  public:
-	Parser(const char *expr) noexcept;
-	bool ToRpn(std::queue<std::unique_ptr<AToken>> &rpn);
+  Parser(const char *expr) noexcept;
+  bool ToRpn(std::queue<std::unique_ptr<AToken>> &rpn);
 
  private:
-	bool ToRpnHandleWrongToken(AToken *token);
-	bool ToRpnHandleNumberToken(AToken *token,
+  bool ToRpnHandleWrongToken(AToken *token);
+  bool ToRpnHandleNumberToken(AToken *token,
                               std::queue<std::unique_ptr<AToken>> &rpn);
-	bool ToRpnHandleFuncToken(AToken *token,
+  bool ToRpnHandleFuncToken(AToken *token,
                             std::stack<std::unique_ptr<AToken>> &stack);
-	bool ToRpnHandleUnaryOpToken(AToken *token,
+  bool ToRpnHandleUnaryOpToken(AToken *token,
                                std::stack<std::unique_ptr<AToken>> &stack);
-	bool ToRpnHandleBinaryOpToken(AToken *token,
+  bool ToRpnHandleBinaryOpToken(AToken *token,
                                 std::stack<std::unique_ptr<AToken>> &stack,
                                 std::queue<std::unique_ptr<AToken>> &rpn);
-	bool ToRpnHandleLeftBracketToken(AToken *token,
+  bool ToRpnHandleLeftBracketToken(AToken *token,
                                    std::stack<std::unique_ptr<AToken>> &stack);
-	bool ToRpnHandleRightBracketToken(AToken *token,
+  bool ToRpnHandleRightBracketToken(AToken *token,
                                     std::stack<std::unique_ptr<AToken>> &stack,
                                     std::queue<std::unique_ptr<AToken>> &rpn);
 
  private:
-	Lexer lexer_;
-	std::string errmsg_;
-	TokenType prev_token_;
+  Lexer lexer_;
+  std::string errmsg_;
+  TokenType prev_token_;
 };
 
 }  // namespace smartcalc
 
 }  // namespace s21
-
 
 #endif  // LIBSMARTCALC_PARSER_H_

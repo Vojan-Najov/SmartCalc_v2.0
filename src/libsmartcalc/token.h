@@ -1,8 +1,8 @@
 #ifndef LIBSMARTCALC_TOKEN_H_
 #define LIBSMARTCALC_TOKEN_H_
 
-#include <string>
 #include <iostream>
+#include <string>
 
 namespace s21 {
 
@@ -87,8 +87,8 @@ class BinaryOpToken : public AToken {
   TokenType Type(void) const noexcept override;
   std::string Dump(void) const override;
   AToken *Apply(const AToken *lhs, const AToken *rhs) const;
-	int Precedence(void) const noexcept;
-	bool LeftAssociative(void) const noexcept;
+  int Precedence(void) const noexcept;
+  bool LeftAssociative(void) const noexcept;
   ~BinaryOpToken(void);
 
  private:
@@ -137,8 +137,6 @@ class NameToken : public AToken {
 };
 
 std::ostream &operator<<(std::ostream &out, TokenType type);
-
-
 
 }  // namespace smartcalc
 

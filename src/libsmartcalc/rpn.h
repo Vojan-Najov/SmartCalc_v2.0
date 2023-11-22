@@ -1,8 +1,8 @@
 #ifndef LIBSMARTCALC_RPN_H_
 #define LIBSMARTCALC_RPN_H_
 
-#include <memory>
 #include <deque>
+#include <memory>
 
 #include "token.h"
 
@@ -12,12 +12,13 @@ namespace smartcalc {
 
 class Rpn {
  public:
-	void Push(AToken *token);
-	void Calculate(void);
-	double Result(void) const noexcept;
+  void Push(AToken *token);
+  void Calculate(void);
+  double Result(void) const noexcept;
+
  private:
-	double result_ = 0.0;
-	std::deque<std::unique_ptr<AToken>> rpn_;	
+  double result_ = 0.0;
+  std::deque<std::unique_ptr<AToken>> rpn_;
 };
 
 }  // namespace smartcalc

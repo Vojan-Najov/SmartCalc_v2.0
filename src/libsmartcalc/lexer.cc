@@ -114,7 +114,7 @@ AToken *Lexer::MultiCharacterLexem(void) {
     ++end;
   }
 
-	size_t n = end - expr_;
+  size_t n = end - expr_;
   if (n == 2 && std::strncmp(expr_, "ln", 2) == 0) {
     token = new FuncToken{&unary_ops::ln};
   } else if (n == 3 && std::strncmp(expr_, "log", 3) == 0) {

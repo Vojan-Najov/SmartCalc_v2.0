@@ -90,3 +90,40 @@ TEST_F(LexerTest, ExpressionTest02) {
 	EXPECT_EQ(i, sizeof(arr) / sizeof(std::string));
 }
 
+TEST_F(LexerTest, ExpressionTest03) {
+	const char *str = "3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3";
+	Lexer lexer{str};
+	std::string arr[] = {std::to_string(3.0), "+", std::to_string(4.0),
+                       "*", std::to_string(2.0), "/", "(",
+                       std::to_string(1.0), "-", std::to_string(5.0), ")",
+                       "^", std::to_string(2.0), "^", std::to_string(3.0)};
+
+	size_t i = 0;
+	for (; i < sizeof(arr) / sizeof(std::string) && !lexer.Empty(); ++i) {
+		AToken *token = lexer.NextToken();
+		EXPECT_EQ(arr[i], token->Dump());
+		delete token;
+	}
+
+	EXPECT_TRUE(lexer.Empty());
+	EXPECT_EQ(i, sizeof(arr) / sizeof(std::string));
+}
+
+TEST_F(LexerTest, ExpressionTest04) {
+	const char *str = "sin(cos(4) / 3 * 2)";
+	Lexer lexer{str};
+	std::string arr[] = {"sin", "(", "cos", "(", std::to_string(4.0), ")",
+                       "/", std::to_string(3.0), "*", std::to_string(2.0), ")"};
+
+	size_t i = 0;
+	for (; i < sizeof(arr) / sizeof(std::string) && !lexer.Empty(); ++i) {
+		AToken *token = lexer.NextToken();
+		EXPECT_EQ(arr[i], token->Dump());
+		delete token;
+	}
+
+	EXPECT_TRUE(lexer.Empty());
+	EXPECT_EQ(i, sizeof(arr) / sizeof(std::string));
+}
+
+

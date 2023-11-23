@@ -9,15 +9,17 @@ namespace smartcalc {
 Parser::Parser(const char *expr) noexcept
     : lexer_{expr}, errmsg_{}, prev_token_{TokenType::Empty} {}
 
-bool Parser::ToRpn(std::queue<std::unique_ptr<AToken>> &rpn) {
+bool Parser::Error(void) const noexcept { return !errmsg_.empty(); }
+
+const std::string &Parser::ErrorMessage(void) const noexcept { return errmsg_; }
+
+Rpn Parser::ToRpn(void) {
+  Rpn rpn;
   bool err_status = false;
   std::stack<std::unique_ptr<AToken>> stack;
 
   while (!lexer_.Empty() && !err_status) {
     AToken *token = lexer_.NextToken();
-
-    // std::cout << token->Dump() << std::endl;
-    // std::cout << token->Type() << std::endl;
 
     if (token->Type() == TokenType::Wrong) {
       err_status = ToRpnHandleWrongToken(token);
@@ -36,18 +38,25 @@ bool Parser::ToRpn(std::queue<std::unique_ptr<AToken>> &rpn) {
     }
   }
 
+  if (!err_status && prev_token_ != TokenType::RightBracket &&
+      prev_token_ != TokenType::Number) {
+    errmsg_ = std::string{"parser: error near the end of the line"};
+    // rpn.clear();
+  }
+
   while (!stack.empty() && !err_status) {
     std::unique_ptr<AToken> &op = stack.top();
     if (op->Type() == TokenType::LeftBracket) {
       errmsg_ = std::string{"parser: unpaired brackets"};
       err_status = true;
     } else {
-      rpn.emplace(std::move(op));
+      // rpn.emplace(std::move(op));
+      rpn.Push(op);
       stack.pop();
     }
   }
 
-  return err_status;
+  return rpn;
 }
 
 bool Parser::ToRpnHandleWrongToken(AToken *token) {
@@ -57,8 +66,7 @@ bool Parser::ToRpnHandleWrongToken(AToken *token) {
   return true;
 }
 
-bool Parser::ToRpnHandleNumberToken(AToken *token,
-                                    std::queue<std::unique_ptr<AToken>> &rpn) {
+bool Parser::ToRpnHandleNumberToken(AToken *token, Rpn &rpn) {
   if (prev_token_ != TokenType::Empty && prev_token_ != TokenType::UnaryOp &&
       prev_token_ != TokenType::BinaryOp &&
       prev_token_ != TokenType::LeftBracket) {
@@ -68,7 +76,7 @@ bool Parser::ToRpnHandleNumberToken(AToken *token,
     return true;
   }
 
-  rpn.emplace(token);
+  rpn.Push(token);
   prev_token_ = TokenType::Number;
 
   return false;
@@ -119,8 +127,7 @@ bool Parser::ToRpnHandleUnaryOpToken(
 }
 
 bool Parser::ToRpnHandleBinaryOpToken(
-    AToken *token, std::stack<std::unique_ptr<AToken>> &stack,
-    std::queue<std::unique_ptr<AToken>> &rpn) {
+    AToken *token, std::stack<std::unique_ptr<AToken>> &stack, Rpn &rpn) {
   if (prev_token_ != TokenType::Number &&
       prev_token_ != TokenType::RightBracket) {
     errmsg_ = std::string{"parser: error near token "} + token->Dump();
@@ -132,7 +139,8 @@ bool Parser::ToRpnHandleBinaryOpToken(
   while (!stack.empty()) {
     std::unique_ptr<AToken> &op = stack.top();
     if (op->Type() == TokenType::UnaryOp) {
-      rpn.emplace(std::move(op));
+      // rpn.Push(std::move(op));
+      rpn.Push(op);
       stack.pop();
     } else if (op->Type() == TokenType::BinaryOp) {
       int cur_precedence = static_cast<BinaryOpToken *>(token)->Precedence();
@@ -142,7 +150,8 @@ bool Parser::ToRpnHandleBinaryOpToken(
 
       if (op_precedence > cur_precedence ||
           ((op_precedence == cur_precedence) && left_associative)) {
-        rpn.emplace(std::move(op));
+        // rpn.Push(std::move(op));
+        rpn.Push(op);
         stack.pop();
       } else {
         break;
@@ -154,40 +163,6 @@ bool Parser::ToRpnHandleBinaryOpToken(
 
   stack.emplace(token);
   prev_token_ = TokenType::BinaryOp;
-  return false;
-}
-
-bool Parser::ToRpnHandleRightBracketToken(
-    AToken *token, std::stack<std::unique_ptr<AToken>> &stack,
-    std::queue<std::unique_ptr<AToken>> &rpn) {
-  delete token;
-
-  if (prev_token_ != TokenType::Number &&
-      prev_token_ != TokenType::RightBracket) {
-    errmsg_ = std::string{"parser: error near token "} + token->Dump();
-    prev_token_ = TokenType::Wrong;
-    return true;
-  }
-
-  while (!stack.empty() && stack.top()->Type() != TokenType::LeftBracket) {
-    rpn.emplace(std::move(stack.top()));
-    stack.pop();
-  }
-
-  if (stack.empty()) {
-    errmsg_ = std::string{"parser: unpaired brackets"};
-    prev_token_ = TokenType::Wrong;
-    return true;
-  }
-
-  stack.pop();
-  if (!stack.empty() && stack.top()->Type() == TokenType::Function) {
-    rpn.emplace(std::move(stack.top()));
-    stack.pop();
-  }
-
-  prev_token_ = TokenType::RightBracket;
-
   return false;
 }
 
@@ -205,6 +180,41 @@ bool Parser::ToRpnHandleLeftBracketToken(
 
   stack.emplace(token);
   prev_token_ = TokenType::LeftBracket;
+
+  return false;
+}
+
+bool Parser::ToRpnHandleRightBracketToken(
+    AToken *token, std::stack<std::unique_ptr<AToken>> &stack, Rpn &rpn) {
+  delete token;
+
+  if (prev_token_ != TokenType::Number &&
+      prev_token_ != TokenType::RightBracket) {
+    errmsg_ = std::string{"parser: error near token "} + token->Dump();
+    prev_token_ = TokenType::Wrong;
+    return true;
+  }
+
+  while (!stack.empty() && stack.top()->Type() != TokenType::LeftBracket) {
+    // rpn.emplace(std::move(stack.top()));
+    rpn.Push(stack.top());
+    stack.pop();
+  }
+
+  if (stack.empty()) {
+    errmsg_ = std::string{"parser: unpaired brackets"};
+    prev_token_ = TokenType::Wrong;
+    return true;
+  }
+
+  stack.pop();
+  if (!stack.empty() && stack.top()->Type() == TokenType::Function) {
+    // rpn.emplace(std::move(stack.top()));
+    rpn.Push(stack.top());
+    stack.pop();
+  }
+
+  prev_token_ = TokenType::RightBracket;
 
   return false;
 }

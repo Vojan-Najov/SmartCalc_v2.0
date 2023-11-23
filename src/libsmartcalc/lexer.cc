@@ -134,7 +134,7 @@ AToken *Lexer::MultiCharacterLexem(void) {
   } else {
     token = new NameToken{expr_, n};
   }
-  expr_ += n;
+  expr_ = end;
 
   return token;
 }

@@ -27,7 +27,7 @@ all: ${TARGET}
 ${TARGET}: ${OBJ}
 	${AR} $@ $?
 
-${TEST}: ${TARGET} ${INCLUDE} ${TEST_OBJ}
+${TEST}: ${TARGET} ${TEST_OBJ}
 	${CXX} -o $@ ${TEST_OBJ} ${TARGET} ${TEST_LIBS} -I${INCLUDE_DIR}
 	./${TEST}
 

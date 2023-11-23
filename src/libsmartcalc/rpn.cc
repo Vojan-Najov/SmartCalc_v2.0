@@ -6,7 +6,14 @@ namespace s21 {
 
 namespace smartcalc {
 
+Rpn::ConstIterator Rpn::begin(void) const noexcept { return rpn_.begin(); }
+Rpn::ConstIterator Rpn::end(void) const noexcept { return rpn_.end(); }
+
 void Rpn::Push(AToken *token) { rpn_.emplace_back(token); }
+
+void Rpn::Push(std::unique_ptr<AToken> &token_ptr) {
+  rpn_.emplace_back(std::move(token_ptr));
+}
 
 void Rpn::Calculate(void) {
   std::stack<std::unique_ptr<AToken>> stack;

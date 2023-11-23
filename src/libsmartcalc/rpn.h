@@ -12,7 +12,15 @@ namespace smartcalc {
 
 class Rpn {
  public:
+  using ConstIterator = std::deque<std::unique_ptr<AToken>>::const_iterator;
+
+ public:
+  ConstIterator begin(void) const noexcept;
+  ConstIterator end(void) const noexcept;
+
+ public:
   void Push(AToken *token);
+  void Push(std::unique_ptr<AToken> &token_ptr);
   void Calculate(void);
   double Result(void) const noexcept;
 

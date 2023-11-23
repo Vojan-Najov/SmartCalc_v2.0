@@ -7,7 +7,7 @@ namespace s21 {
 double Smartcalc::CalculateExpression(const char *expr) const {
   // double result = 0.0;
   smartcalc::Parser parser(expr);
-  // smartcalc::Rpn rpn = parser.ToRpn();
+  smartcalc::Rpn rpn = parser.ToRpn();
   //  if (parser.Error()) {
   //  }
   // if (rpn.Valid()) {

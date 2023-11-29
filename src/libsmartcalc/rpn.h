@@ -21,8 +21,8 @@ class Rpn {
  public:
   void Push(AToken *token);
   void Push(std::unique_ptr<AToken> &token_ptr);
-  void Calculate(void);
-  void Calculate(double var);
+  bool Calculate(void);
+  bool Calculate(double var);
   double Result(void) const noexcept;
 
  private:

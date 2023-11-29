@@ -16,7 +16,7 @@ void Rpn::Push(std::unique_ptr<AToken> &token_ptr) {
   rpn_.emplace_back(std::move(token_ptr));
 }
 
-void Rpn::Calculate(void) {
+bool Rpn::Calculate(void) {
   std::stack<std::unique_ptr<AToken>> stack;
 
   while (!rpn_.empty()) {
@@ -51,9 +51,11 @@ void Rpn::Calculate(void) {
   }
   result_ = static_cast<NumberToken *>(stack.top().get())->Value();
   stack.pop();
+
+	return true;
 }
 
-void Rpn::Calculate(double var) {
+bool Rpn::Calculate(double var) {
 	Iterator it = rpn_.begin();
 	Iterator last = rpn_.end();
 
@@ -64,7 +66,7 @@ void Rpn::Calculate(double var) {
 		}
 	}
 
-	Calculate();
+	return Calculate();
 }
 
 double Rpn::Result(void) const noexcept { return result_; }

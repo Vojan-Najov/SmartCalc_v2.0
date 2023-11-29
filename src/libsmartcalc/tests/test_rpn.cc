@@ -22,6 +22,7 @@ TEST_F(RpnTest, Expression00) {
 	Rpn rpn;
 
 	rpn.Push(new NumberToken{5.0});
+
 	rpn.Calculate();
 	EXPECT_EQ(rpn.Result(), 5.0);
 }
@@ -32,7 +33,9 @@ TEST_F(RpnTest, Expression01) {
 	rpn.Push(new NumberToken{15.0});
 	rpn.Push(new NumberToken{10.0});
 	rpn.Push(new BinaryOpToken{&s21::smartcalc::binary_ops::sub});
-	rpn.Calculate();
+
+	bool ret = rpn.Calculate();
+	EXPECT_TRUE(ret);
 	EXPECT_EQ(rpn.Result(), 5.0);
 }
 
@@ -56,7 +59,9 @@ TEST_F(RpnTest, Expression02) {
 	rpn.Push(new BinaryOpToken{&s21::smartcalc::binary_ops::power});
 	rpn.Push(new BinaryOpToken{&s21::smartcalc::binary_ops::devide});
 	rpn.Push(new BinaryOpToken{&s21::smartcalc::binary_ops::sum});
-	rpn.Calculate();
+
+	bool ret = rpn.Calculate();
+	EXPECT_TRUE(ret);
 	EXPECT_EQ(rpn.Result(), result);
 }
 

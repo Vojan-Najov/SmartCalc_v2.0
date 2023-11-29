@@ -7,6 +7,7 @@ namespace s21 {
 namespace smartcalc {
 
 Rpn::ConstIterator Rpn::begin(void) const noexcept { return rpn_.begin(); }
+
 Rpn::ConstIterator Rpn::end(void) const noexcept { return rpn_.end(); }
 
 void Rpn::Push(AToken *token) { rpn_.emplace_back(token); }
@@ -50,6 +51,20 @@ void Rpn::Calculate(void) {
   }
   result_ = static_cast<NumberToken *>(stack.top().get())->Value();
   stack.pop();
+}
+
+void Rpn::Calculate(double var) {
+	Iterator it = rpn_.begin();
+	Iterator last = rpn_.end();
+
+	for (; it != last; ++it) {
+		if ((*it)->Type() == TokenType::Var) {
+			std::unique_ptr<AToken> token_ptr{new NumberToken{var}};
+			(*it) = std::move(token_ptr);
+		}
+	}
+
+	Calculate();
 }
 
 double Rpn::Result(void) const noexcept { return result_; }

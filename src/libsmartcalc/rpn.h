@@ -22,8 +22,12 @@ class Rpn {
   void Push(AToken *token);
   void Push(std::unique_ptr<AToken> &token_ptr);
   void Calculate(void);
+  void Calculate(double var);
   double Result(void) const noexcept;
 
+ private:
+  using Iterator = std::deque<std::unique_ptr<AToken>>::iterator;
+	
  private:
   double result_ = 0.0;
   std::deque<std::unique_ptr<AToken>> rpn_;

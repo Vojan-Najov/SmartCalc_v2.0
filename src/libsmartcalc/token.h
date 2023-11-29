@@ -14,7 +14,7 @@ enum class TokenType {
   Number,
   UnaryOp,
   BinaryOp,
-  // Var,
+  Var,
   Function,
   LeftBracket,
   RightBracket,

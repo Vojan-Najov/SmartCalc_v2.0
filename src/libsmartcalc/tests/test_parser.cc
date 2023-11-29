@@ -1,14 +1,23 @@
 #include <gtest/gtest.h>
 
+#include "smartcalc.h"
 #include "parser.h"
 
 using Parser = s21::smartcalc::Parser;
 using AToken = s21::smartcalc::AToken;
 using TokenType = s21::smartcalc::TokenType;
 using Rpn = s21::smartcalc::Rpn;
+using Smartcalc = s21::Smartcalc;
 
 class ParserTest : public testing::Test {
  public:
+	std::map<std::string, double> vars;
+
+	void SetUp(void) override {
+		vars.emplace("E", Smartcalc::E);
+		vars.emplace("PI", Smartcalc::PI);
+	}
+
 	template <size_t N>
 	void check(const Rpn &rpn, const std::string (& arr)[N]) {
 		size_t i = 0;
@@ -27,7 +36,7 @@ TEST_F(ParserTest, Expression01) {
 	std::string arr[] = {std::to_string(1.0), std::to_string(2.0), "+"};
 
 	Parser parser(str);
-	Rpn rpn = parser.ToRpn();
+	Rpn rpn = parser.ToRpn(vars);
 	EXPECT_FALSE(parser.Error());
 
 	check(rpn, arr);
@@ -43,7 +52,7 @@ TEST_F(ParserTest, Expression02) {
                        "^", "^", "/", "+"};
 
 	Parser parser(str);
-	Rpn rpn = parser.ToRpn();
+	Rpn rpn = parser.ToRpn(vars);
 	EXPECT_FALSE(parser.Error());
 
 	check(rpn, arr);
@@ -57,7 +66,33 @@ TEST_F(ParserTest, Expression03) {
 											 std::to_string(2.0), "*", "sin"};
 
 	Parser parser(str);
-	Rpn rpn = parser.ToRpn();
+	Rpn rpn = parser.ToRpn(vars);
+	EXPECT_FALSE(parser.Error());
+
+	check(rpn, arr);
+}
+
+TEST_F(ParserTest, Expression04) {
+	const char *str = "PI";
+	std::string arr[] = {std::to_string(Smartcalc::PI)};
+
+	Parser parser(str);
+	Rpn rpn = parser.ToRpn(vars);
+	EXPECT_FALSE(parser.Error());
+
+	check(rpn, arr);
+}
+
+TEST_F(ParserTest, Expression05) {
+	const char *str = "PI + 2 * E";
+	std::string arr[] = {std::to_string(Smartcalc::PI),
+											 std::to_string(2.0),
+											 std::to_string(Smartcalc::E),
+											 std::string{"*"},
+											 std::string{"+"}};
+
+	Parser parser(str);
+	Rpn rpn = parser.ToRpn(vars);
 	EXPECT_FALSE(parser.Error());
 
 	check(rpn, arr);

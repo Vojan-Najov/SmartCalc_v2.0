@@ -13,13 +13,19 @@ bool Parser::Error(void) const noexcept { return !errmsg_.empty(); }
 
 const std::string &Parser::ErrorMessage(void) const noexcept { return errmsg_; }
 
-Rpn Parser::ToRpn(void) {
+Rpn Parser::ToRpn(const VarMap &vars) {
   Rpn rpn;
   bool err_status = false;
   std::stack<std::unique_ptr<AToken>> stack;
 
   while (!lexer_.Empty() && !err_status) {
     AToken *token = lexer_.NextToken();
+
+		if (token->Type() == TokenType::Name) {
+			(void) token;
+			(void) vars;
+			token = ToRpnHandleNameToken(static_cast<NameToken*>(token), vars);
+		}
 
     if (token->Type() == TokenType::Wrong) {
       err_status = ToRpnHandleWrongToken(token);
@@ -139,7 +145,6 @@ bool Parser::ToRpnHandleBinaryOpToken(
   while (!stack.empty()) {
     std::unique_ptr<AToken> &op = stack.top();
     if (op->Type() == TokenType::UnaryOp) {
-      // rpn.Push(std::move(op));
       rpn.Push(op);
       stack.pop();
     } else if (op->Type() == TokenType::BinaryOp) {
@@ -150,7 +155,6 @@ bool Parser::ToRpnHandleBinaryOpToken(
 
       if (op_precedence > cur_precedence ||
           ((op_precedence == cur_precedence) && left_associative)) {
-        // rpn.Push(std::move(op));
         rpn.Push(op);
         stack.pop();
       } else {
@@ -196,7 +200,6 @@ bool Parser::ToRpnHandleRightBracketToken(
   }
 
   while (!stack.empty() && stack.top()->Type() != TokenType::LeftBracket) {
-    // rpn.emplace(std::move(stack.top()));
     rpn.Push(stack.top());
     stack.pop();
   }
@@ -209,7 +212,6 @@ bool Parser::ToRpnHandleRightBracketToken(
 
   stack.pop();
   if (!stack.empty() && stack.top()->Type() == TokenType::Function) {
-    // rpn.emplace(std::move(stack.top()));
     rpn.Push(stack.top());
     stack.pop();
   }
@@ -217,6 +219,19 @@ bool Parser::ToRpnHandleRightBracketToken(
   prev_token_ = TokenType::RightBracket;
 
   return false;
+}
+
+AToken *Parser::ToRpnHandleNameToken(NameToken *token, const VarMap &vars) {
+	AToken *new_token{nullptr};
+ 
+	VarMap::const_iterator vars_it = vars.find(token->Name());
+	if (vars_it != vars.end()) {
+		new_token = new NumberToken(vars_it->second);
+	}
+
+	delete token;
+
+	return new_token;
 }
 
 }  // namespace smartcalc

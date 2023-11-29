@@ -5,6 +5,7 @@
 #include <queue>
 #include <stack>
 #include <string>
+#include <map>
 
 #include "lexer.h"
 #include "rpn.h"
@@ -15,10 +16,13 @@ namespace smartcalc {
 
 class Parser final {
  public:
+	using VarMap = std::map<std::string, double>;
+	using FuncMap = std::map<std::string, Rpn>;
+ public:
   Parser(const char *expr) noexcept;
   bool Error(void) const noexcept;
   const std::string &ErrorMessage(void) const noexcept;
-  Rpn ToRpn(void);
+  Rpn ToRpn(const VarMap &vars);
 
  private:
   bool ToRpnHandleWrongToken(AToken *token);
@@ -35,6 +39,7 @@ class Parser final {
   bool ToRpnHandleRightBracketToken(AToken *token,
                                     std::stack<std::unique_ptr<AToken>> &stack,
                                     Rpn &rpn);
+	AToken *ToRpnHandleNameToken(NameToken *token, const VarMap &vars);
 
  private:
   Lexer lexer_;

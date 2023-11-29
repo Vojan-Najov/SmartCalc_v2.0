@@ -1,13 +1,22 @@
-#include "smartcalc.h"
+#include <utility>
 
+#include "smartcalc.h"
 #include "parser.h"
 
 namespace s21 {
 
+const double Smartcalc::PI = 3.1415926535;
+const double Smartcalc::E = 2.7182818284;
+
+Smartcalc::Smartcalc(void) {
+	vars_.emplace("PI", PI);
+	vars_.emplace("E", E);
+}
+
 double Smartcalc::CalculateExpression(const char *expr) const {
   // double result = 0.0;
   smartcalc::Parser parser(expr);
-  smartcalc::Rpn rpn = parser.ToRpn();
+  smartcalc::Rpn rpn = parser.ToRpn(vars_);
   //  if (parser.Error()) {
   //  }
   // if (rpn.Valid()) {

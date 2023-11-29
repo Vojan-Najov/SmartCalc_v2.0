@@ -1,4 +1,5 @@
 #include <utility>
+#include <cmath>
 
 #include "smartcalc.h"
 #include "parser.h"
@@ -14,29 +15,56 @@ Smartcalc::Smartcalc(void) {
 }
 
 double Smartcalc::CalculateExpression(const char *expr) const {
-  // double result = 0.0;
   smartcalc::Parser parser(expr);
   smartcalc::Rpn rpn = parser.ToRpn(vars_);
-  //  if (parser.Error()) {
-  //  }
-  // if (rpn.Valid()) {
-  //	result = rpn.Calculate();
-  // }
-  return 0.0;
+
+	if (parser.Error()) {
+		return std::nan(""); // handle error
+	}
+	
+	if (!rpn.Calculate()) {
+		return std::nan(""); // handle error
+	}
+
+  return rpn.Result();
 }
 
 bool Smartcalc::SetVariable(const char *name, const char *expr) {
   smartcalc::Parser parser(expr);
-  (void)name;
-  (void)expr;
-  return false;
+	smartcalc::Rpn rpn = parser.ToRpn(vars_);
+
+	if (parser.Error()) {
+		return false; // handle error
+	}
+
+	if (!rpn.Calculate()) {
+		return false; // handle error
+	}
+
+	vars_[name] = rpn.Result();
+
+  return true;
 }
 
 bool Smartcalc::SetFunction(const char *name, const char *expr) {
-  smartcalc::Parser parser(expr);
+//	if (vars_.find(name) != vars_.end()) {
+//		return false; // handle error
+//	}
+
+//  smartcalc::Parser parser(expr, true);
+//	smartcalc::Rpn rpn = parser.ToRpn(vars_, func_);
+//	if (parser.Error()) {
+//		return false; // handle error
+//	}
+
+//	if (!rpn.Optimize()) {
+//		return false; // handle error
+//	}
+
+//	func_[name] = std::move(rpn);
   (void)name;
   (void)expr;
-  return false;
+  return true;
 }
 
 }  // namespace s21

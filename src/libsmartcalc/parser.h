@@ -1,11 +1,11 @@
 #ifndef LIBSMARTCALC_PARSER_H_
 #define LIBSMARTCALC_PARSER_H_
 
+#include <map>
 #include <memory>
 #include <queue>
 #include <stack>
 #include <string>
-#include <map>
 
 #include "lexer.h"
 #include "rpn.h"
@@ -16,13 +16,18 @@ namespace smartcalc {
 
 class Parser final {
  public:
-	using VarMap = std::map<std::string, double>;
-	using FuncMap = std::map<std::string, Rpn>;
+  using VarMap = std::map<std::string, double>;
+  using FuncMap = std::map<std::string, Rpn>;
+
  public:
-  Parser(const char *expr) noexcept;
+  Parser(const char *expr, bool x_is_var = false) noexcept;
+
+ public:
   bool Error(void) const noexcept;
   const std::string &ErrorMessage(void) const noexcept;
-  Rpn ToRpn(const VarMap &vars);
+
+ public:
+  Rpn ToRpn(const VarMap &vars, const FuncMap &funcs);
 
  private:
   bool ToRpnHandleWrongToken(AToken *token);
@@ -39,12 +44,14 @@ class Parser final {
   bool ToRpnHandleRightBracketToken(AToken *token,
                                     std::stack<std::unique_ptr<AToken>> &stack,
                                     Rpn &rpn);
-	AToken *ToRpnHandleNameToken(NameToken *token, const VarMap &vars);
+  AToken *ToRpnHandleNameToken(NameToken *token, const VarMap &vars,
+                               const FuncMap &funcs);
 
  private:
   Lexer lexer_;
   std::string errmsg_;
   TokenType prev_token_;
+  bool x_is_var_;
 };
 
 }  // namespace smartcalc

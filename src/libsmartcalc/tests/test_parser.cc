@@ -12,6 +12,7 @@ using Smartcalc = s21::Smartcalc;
 class ParserTest : public testing::Test {
  public:
 	std::map<std::string, double> vars;
+	std::map<std::string, Rpn> funcs;
 
 	void SetUp(void) override {
 		vars.emplace("E", Smartcalc::E);
@@ -24,7 +25,7 @@ class ParserTest : public testing::Test {
 		auto it = rpn.begin();
 		auto last = rpn.end();
 		for (; i < N && it != last; ++i, ++it) {
-			EXPECT_EQ((*it)->Dump(), arr[i]);
+			EXPECT_EQ((*it)->dump(), arr[i]);
 		}
 		EXPECT_EQ(it, last);
 		EXPECT_EQ(i, N);
@@ -36,7 +37,7 @@ TEST_F(ParserTest, Expression01) {
 	std::string arr[] = {std::to_string(1.0), std::to_string(2.0), "+"};
 
 	Parser parser(str);
-	Rpn rpn = parser.ToRpn(vars);
+	Rpn rpn = parser.ToRpn(vars, funcs);
 	EXPECT_FALSE(parser.Error());
 
 	check(rpn, arr);
@@ -52,7 +53,7 @@ TEST_F(ParserTest, Expression02) {
                        "^", "^", "/", "+"};
 
 	Parser parser(str);
-	Rpn rpn = parser.ToRpn(vars);
+	Rpn rpn = parser.ToRpn(vars, funcs);
 	EXPECT_FALSE(parser.Error());
 
 	check(rpn, arr);
@@ -66,7 +67,7 @@ TEST_F(ParserTest, Expression03) {
 											 std::to_string(2.0), "*", "sin"};
 
 	Parser parser(str);
-	Rpn rpn = parser.ToRpn(vars);
+	Rpn rpn = parser.ToRpn(vars, funcs);
 	EXPECT_FALSE(parser.Error());
 
 	check(rpn, arr);
@@ -77,7 +78,7 @@ TEST_F(ParserTest, Expression04) {
 	std::string arr[] = {std::to_string(Smartcalc::PI)};
 
 	Parser parser(str);
-	Rpn rpn = parser.ToRpn(vars);
+	Rpn rpn = parser.ToRpn(vars, funcs);
 	EXPECT_FALSE(parser.Error());
 
 	check(rpn, arr);
@@ -92,7 +93,7 @@ TEST_F(ParserTest, Expression05) {
 											 std::string{"+"}};
 
 	Parser parser(str);
-	Rpn rpn = parser.ToRpn(vars);
+	Rpn rpn = parser.ToRpn(vars, funcs);
 	EXPECT_FALSE(parser.Error());
 
 	check(rpn, arr);

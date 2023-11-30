@@ -36,7 +36,7 @@ AToken *Lexer::NextToken(void) {
     token = MultiCharacterLexem();
   }
 
-  prev_token_ = token->Type();
+  prev_token_ = token->type;
   while (std::isspace(*expr_)) {
     ++expr_;
   }

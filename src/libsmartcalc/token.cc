@@ -6,183 +6,219 @@ namespace s21 {
 
 namespace smartcalc {
 
-// EMPTY TOKEN
+/*
+ *  EMPTY TOKEN
+ */
 
-TokenType EmptyToken::Type(void) const noexcept { return TokenType::Empty; }
-
-std::string EmptyToken::Dump(void) const { return std::string{}; }
+EmptyToken::EmptyToken(void) : AToken{TokenType::Empty} {}
 
 EmptyToken::~EmptyToken(void) {}
 
-// WRONG TOKEN
+EmptyToken *EmptyToken::clone(void) const { return new EmptyToken{}; }
 
-WrongToken::WrongToken(const std::string &str) : errmsg{str} {}
+std::string EmptyToken::dump(void) const { return ""; }
 
-TokenType WrongToken::Type(void) const noexcept { return TokenType::Wrong; }
+/*
+ *  WRONG TOKEN
+ */
 
-std::string WrongToken::Dump(void) const { return errmsg; }
+WrongToken::WrongToken(const std::string &str)
+    : AToken{TokenType::Wrong}, errmsg{str} {}
 
 WrongToken::~WrongToken(void) {}
 
-// NUMBER TOKEN
+WrongToken *WrongToken::clone(void) const { return new WrongToken{errmsg}; }
 
-NumberToken::NumberToken(double value) noexcept : value_(value) {}
+std::string WrongToken::dump(void) const { return errmsg; }
 
-TokenType NumberToken::Type(void) const noexcept { return TokenType::Number; }
+/*
+ *  NUMBER TOKEN
+ */
 
-std::string NumberToken::Dump(void) const { return std::to_string(value_); }
-
-double NumberToken::Value(void) const noexcept { return value_; }
+NumberToken::NumberToken(double value)
+    : AToken{TokenType::Number}, value{value} {}
 
 NumberToken::~NumberToken(void) {}
 
-// UNARY OP TOKEN
+NumberToken *NumberToken::clone(void) const { return new NumberToken{value}; }
 
-UnaryOpToken::UnaryOpToken(Unop unop) noexcept : unop_{unop} {}
+std::string NumberToken::dump(void) const { return std::to_string(value); }
 
-TokenType UnaryOpToken::Type(void) const noexcept { return TokenType::UnaryOp; }
+/*
+ *  VAR TOKEN
+ */
 
-std::string UnaryOpToken::Dump(void) const {
-  const char *s = "unknow unop";
+VarToken::VarToken(void) : AToken{TokenType::Var} {}
 
-  if (unop_ == &unary_ops::plus) {
-    s = "+";
-  } else if (unop_ == &unary_ops::minus) {
-    s = "-";
-  }
+VarToken::~VarToken(void) {}
 
-  return std::string(s);
-}
+VarToken *VarToken::VarToken::clone(void) const { return new VarToken{}; }
 
-AToken *UnaryOpToken::Apply(const AToken *token) const { return unop_(token); }
+std::string VarToken::dump(void) const { return "x"; };
+
+/*
+ *  UNARY OPERATOR TOKEN
+ */
+
+UnaryOpToken::UnaryOpToken(Unop unop)
+    : AToken{TokenType::UnaryOp}, apply{unop} {}
 
 UnaryOpToken::~UnaryOpToken() {}
 
-// BINARY OP TOKEN
-
-BinaryOpToken::BinaryOpToken(Binop binop) noexcept : binop_{binop} {}
-
-TokenType BinaryOpToken::Type(void) const noexcept {
-  return TokenType::BinaryOp;
+UnaryOpToken *UnaryOpToken::clone(void) const {
+  return new UnaryOpToken{apply};
 }
 
-std::string BinaryOpToken::Dump(void) const {
-  const char *s = "unknow binop";
+std::string UnaryOpToken::dump(void) const {
+  const char *s = "{unknow unop}";
 
-  if (binop_ == &binary_ops::sum) {
+  if (apply == &unary_ops::plus) {
     s = "+";
-  } else if (binop_ == &binary_ops::sub) {
+  } else if (apply == &unary_ops::minus) {
     s = "-";
-  } else if (binop_ == &binary_ops::multiply) {
+  }
+
+  return std::string{s};
+}
+
+/*
+ *  BINARY OPERATOR TOKEN
+ */
+
+BinaryOpToken::BinaryOpToken(Binop binop)
+    : AToken{TokenType::BinaryOp}, apply{binop} {}
+
+BinaryOpToken::~BinaryOpToken() {}
+
+BinaryOpToken *BinaryOpToken::clone(void) const {
+  return new BinaryOpToken{apply};
+}
+
+std::string BinaryOpToken::dump(void) const {
+  const char *s = "{unknow binop}";
+
+  if (apply == &binary_ops::sum) {
+    s = "+";
+  } else if (apply == &binary_ops::sub) {
+    s = "-";
+  } else if (apply == &binary_ops::multiply) {
     s = "*";
-  } else if (binop_ == &binary_ops::devide) {
+  } else if (apply == &binary_ops::devide) {
     s = "/";
-  } else if (binop_ == &binary_ops::power) {
+  } else if (apply == &binary_ops::power) {
     s = "^";
-  } else if (binop_ == &binary_ops::module) {
+  } else if (apply == &binary_ops::module) {
     s = "%";
   }
 
-  return std::string(s);
+  return std::string{s};
 }
 
-AToken *BinaryOpToken::Apply(const AToken *lhs, const AToken *rhs) const {
-  return binop_(lhs, rhs);
-}
-
-int BinaryOpToken::Precedence(void) const noexcept {
+int BinaryOpToken::precedence(void) const noexcept {
   int prec = -1;
 
-  if (binop_ == &binary_ops::sum) {
+  if (apply == &binary_ops::sum) {
     prec = 1;
-  } else if (binop_ == &binary_ops::sub) {
+  } else if (apply == &binary_ops::sub) {
     prec = 1;
-  } else if (binop_ == &binary_ops::multiply) {
+  } else if (apply == &binary_ops::multiply) {
     prec = 2;
-  } else if (binop_ == &binary_ops::devide) {
+  } else if (apply == &binary_ops::devide) {
     prec = 2;
-  } else if (binop_ == &binary_ops::power) {
+  } else if (apply == &binary_ops::power) {
     prec = 2;
-  } else if (binop_ == &binary_ops::module) {
+  } else if (apply == &binary_ops::module) {
     prec = 2;
   }
 
   return prec;
 }
 
-bool BinaryOpToken::LeftAssociative(void) const noexcept {
-  return binop_ == &binary_ops::power ? false : true;
+bool BinaryOpToken::left_associative(void) const noexcept {
+  return apply == &binary_ops::power ? false : true;
 }
 
-BinaryOpToken::~BinaryOpToken() {}
+/*
+ *  FUNCTION TOKEN
+ */
 
-// Func TOKEN
+FuncToken::FuncToken(Func func) : AToken{TokenType::Function}, apply{func} {}
 
-FuncToken::FuncToken(Unop unop) noexcept : unop_{unop} {}
+FuncToken::~FuncToken() {}
 
-TokenType FuncToken::Type(void) const noexcept { return TokenType::Function; }
+FuncToken *FuncToken::clone(void) const { return new FuncToken{apply}; }
 
-std::string FuncToken::Dump(void) const {
+std::string FuncToken::dump(void) const {
   const char *s = "unknow function";
 
-  if (unop_ == &unary_ops::sin) {
+  if (apply == &unary_ops::sin) {
     s = "sin";
-  } else if (unop_ == &unary_ops::cos) {
+  } else if (apply == &unary_ops::cos) {
     s = "cos";
-  } else if (unop_ == &unary_ops::tan) {
+  } else if (apply == &unary_ops::tan) {
     s = "tan";
-  } else if (unop_ == &unary_ops::asin) {
+  } else if (apply == &unary_ops::asin) {
     s = "asin";
-  } else if (unop_ == &unary_ops::acos) {
+  } else if (apply == &unary_ops::acos) {
     s = "acos";
-  } else if (unop_ == &unary_ops::atan) {
+  } else if (apply == &unary_ops::atan) {
     s = "atan";
-  } else if (unop_ == &unary_ops::ln) {
+  } else if (apply == &unary_ops::ln) {
     s = "ln";
-  } else if (unop_ == &unary_ops::log) {
+  } else if (apply == &unary_ops::log) {
     s = "log";
   }
 
   return std::string(s);
 }
 
-AToken *FuncToken::Apply(const AToken *token) const { return unop_(token); }
+/*
+ *  LEFT BRACKET TOKEN
+ */
 
-FuncToken::~FuncToken() {}
-
-// LEFT BRACKET TOKEN
-
-TokenType LeftBracketToken::Type(void) const noexcept {
-  return TokenType::LeftBracket;
-}
-
-std::string LeftBracketToken::Dump(void) const { return std::string("("); }
+LeftBracketToken::LeftBracketToken(void) : AToken{TokenType::LeftBracket} {}
 
 LeftBracketToken::~LeftBracketToken(void) {}
 
-// RIGHT BRACKET TOKEN
-
-TokenType RightBracketToken::Type(void) const noexcept {
-  return TokenType::RightBracket;
+LeftBracketToken *LeftBracketToken::clone(void) const {
+  return new LeftBracketToken{};
 }
 
-std::string RightBracketToken::Dump(void) const { return std::string(")"); }
+std::string LeftBracketToken::dump(void) const { return "("; }
+
+/*
+ *  RIGHT BRACKET TOKEN
+ */
+
+RightBracketToken::RightBracketToken(void) : AToken{TokenType::RightBracket} {}
+
+RightBracketToken *RightBracketToken::clone(void) const {
+  return new RightBracketToken{};
+}
+
+std::string RightBracketToken::dump(void) const { return ")"; }
 
 RightBracketToken::~RightBracketToken(void) {}
 
-// NAME TOKEN
+/*
+ *  NAME TOKEN
+ */
 
-NameToken::NameToken(const char *str, size_t n) : name_(str, n) {}
+NameToken::NameToken(const char *str, size_t n)
+    : AToken{TokenType::Name}, name(str, n) {}
 
-TokenType NameToken::Type(void) const noexcept { return TokenType::Name; }
-
-std::string NameToken::Dump(void) const { return name_; }
-
-const char *NameToken::Name(void) const noexcept { return name_.c_str(); }
+NameToken::NameToken(const std::string &name)
+    : AToken{TokenType::Name}, name(name) {}
 
 NameToken::~NameToken(void) {}
 
-// OVERLOAD OPERATOR<< FOR OSTREAM
+NameToken *NameToken::clone(void) const { return new NameToken{name}; }
+
+std::string NameToken::dump(void) const { return name; }
+
+/*
+ *  OVERLOAD OSTREAM OPERATOR << FOR TOKEN TYPE
+ */
 
 std::ostream &operator<<(std::ostream &out, TokenType type) {
   if (type == TokenType::Empty) {

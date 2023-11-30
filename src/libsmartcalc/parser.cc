@@ -6,14 +6,17 @@ namespace s21 {
 
 namespace smartcalc {
 
-Parser::Parser(const char *expr) noexcept
-    : lexer_{expr}, errmsg_{}, prev_token_{TokenType::Empty} {}
+Parser::Parser(const char *expr, bool x_is_var) noexcept
+    : lexer_{expr},
+      errmsg_{},
+      prev_token_{TokenType::Empty},
+      x_is_var_{x_is_var} {}
 
 bool Parser::Error(void) const noexcept { return !errmsg_.empty(); }
 
 const std::string &Parser::ErrorMessage(void) const noexcept { return errmsg_; }
 
-Rpn Parser::ToRpn(const VarMap &vars) {
+Rpn Parser::ToRpn(const VarMap &vars, const FuncMap &funcs) {
   Rpn rpn;
   bool err_status = false;
   std::stack<std::unique_ptr<AToken>> stack;
@@ -21,25 +24,26 @@ Rpn Parser::ToRpn(const VarMap &vars) {
   while (!lexer_.Empty() && !err_status) {
     AToken *token = lexer_.NextToken();
 
-		if (token->Type() == TokenType::Name) {
-			(void) token;
-			(void) vars;
-			token = ToRpnHandleNameToken(static_cast<NameToken*>(token), vars);
-		}
+    if (token->type == TokenType::Name) {
+      (void)token;
+      (void)vars;
+      token =
+          ToRpnHandleNameToken(static_cast<NameToken *>(token), vars, funcs);
+    }
 
-    if (token->Type() == TokenType::Wrong) {
+    if (token->type == TokenType::Wrong) {
       err_status = ToRpnHandleWrongToken(token);
-    } else if (token->Type() == TokenType::Number) {
+    } else if (token->type == TokenType::Number) {
       err_status = ToRpnHandleNumberToken(token, rpn);
-    } else if (token->Type() == TokenType::Function) {
+    } else if (token->type == TokenType::Function) {
       err_status = ToRpnHandleFuncToken(token, stack);
-    } else if (token->Type() == TokenType::UnaryOp) {
+    } else if (token->type == TokenType::UnaryOp) {
       err_status = ToRpnHandleUnaryOpToken(token, stack);
-    } else if (token->Type() == TokenType::BinaryOp) {
+    } else if (token->type == TokenType::BinaryOp) {
       err_status = ToRpnHandleBinaryOpToken(token, stack, rpn);
-    } else if (token->Type() == TokenType::LeftBracket) {
+    } else if (token->type == TokenType::LeftBracket) {
       err_status = ToRpnHandleLeftBracketToken(token, stack);
-    } else if (token->Type() == TokenType::RightBracket) {
+    } else if (token->type == TokenType::RightBracket) {
       err_status = ToRpnHandleRightBracketToken(token, stack, rpn);
     }
   }
@@ -52,7 +56,7 @@ Rpn Parser::ToRpn(const VarMap &vars) {
 
   while (!stack.empty() && !err_status) {
     std::unique_ptr<AToken> &op = stack.top();
-    if (op->Type() == TokenType::LeftBracket) {
+    if (op->type == TokenType::LeftBracket) {
       errmsg_ = std::string{"parser: unpaired brackets"};
       err_status = true;
     } else {
@@ -76,7 +80,7 @@ bool Parser::ToRpnHandleNumberToken(AToken *token, Rpn &rpn) {
   if (prev_token_ != TokenType::Empty && prev_token_ != TokenType::UnaryOp &&
       prev_token_ != TokenType::BinaryOp &&
       prev_token_ != TokenType::LeftBracket) {
-    errmsg_ = std::string{"parser: error near token "} + token->Dump();
+    errmsg_ = std::string{"parser: error near token "} + token->dump();
     delete token;
     prev_token_ = TokenType::Wrong;
     return true;
@@ -93,7 +97,7 @@ bool Parser::ToRpnHandleFuncToken(AToken *token,
   if (prev_token_ != TokenType::Empty && prev_token_ != TokenType::UnaryOp &&
       prev_token_ != TokenType::BinaryOp &&
       prev_token_ != TokenType::LeftBracket) {
-    errmsg_ = std::string{"parser: error near token "} + token->Dump();
+    errmsg_ = std::string{"parser: error near token "} + token->dump();
     delete token;
     prev_token_ = TokenType::Wrong;
     return true;
@@ -104,9 +108,9 @@ bool Parser::ToRpnHandleFuncToken(AToken *token,
 
   /*
           token = lexer_.NextToken();
-          if (token->Type() != TokenType::LeftBracket) {
+          if (token->type != TokenType::LeftBracket) {
                   errmsg_ = std::string{"parser: error near token "} +
-     stack.top()->Dump(); delete token; prev_token_ = TokenType::Wrong; return
+     stack.top()->dump(); delete token; prev_token_ = TokenType::Wrong; return
      true;
           }
 
@@ -120,7 +124,7 @@ bool Parser::ToRpnHandleUnaryOpToken(
     AToken *token, std::stack<std::unique_ptr<AToken>> &stack) {
   if (prev_token_ != TokenType::Empty && prev_token_ != TokenType::BinaryOp &&
       prev_token_ != TokenType::LeftBracket) {
-    errmsg_ = std::string{"parser: error near token "} + token->Dump();
+    errmsg_ = std::string{"parser: error near token "} + token->dump();
     delete token;
     prev_token_ = TokenType::Wrong;
     return true;
@@ -136,7 +140,7 @@ bool Parser::ToRpnHandleBinaryOpToken(
     AToken *token, std::stack<std::unique_ptr<AToken>> &stack, Rpn &rpn) {
   if (prev_token_ != TokenType::Number &&
       prev_token_ != TokenType::RightBracket) {
-    errmsg_ = std::string{"parser: error near token "} + token->Dump();
+    errmsg_ = std::string{"parser: error near token "} + token->dump();
     delete token;
     prev_token_ = TokenType::Wrong;
     return true;
@@ -144,14 +148,14 @@ bool Parser::ToRpnHandleBinaryOpToken(
 
   while (!stack.empty()) {
     std::unique_ptr<AToken> &op = stack.top();
-    if (op->Type() == TokenType::UnaryOp) {
+    if (op->type == TokenType::UnaryOp) {
       rpn.Push(op);
       stack.pop();
-    } else if (op->Type() == TokenType::BinaryOp) {
-      int cur_precedence = static_cast<BinaryOpToken *>(token)->Precedence();
-      int op_precedence = static_cast<BinaryOpToken *>(op.get())->Precedence();
+    } else if (op->type == TokenType::BinaryOp) {
+      int cur_precedence = static_cast<BinaryOpToken *>(token)->precedence();
+      int op_precedence = static_cast<BinaryOpToken *>(op.get())->precedence();
       bool left_associative =
-          static_cast<BinaryOpToken *>(token)->LeftAssociative();
+          static_cast<BinaryOpToken *>(token)->left_associative();
 
       if (op_precedence > cur_precedence ||
           ((op_precedence == cur_precedence) && left_associative)) {
@@ -176,7 +180,7 @@ bool Parser::ToRpnHandleLeftBracketToken(
       prev_token_ != TokenType::BinaryOp &&
       prev_token_ != TokenType::LeftBracket &&
       prev_token_ != TokenType::Function) {
-    errmsg_ = std::string{"parser: error near token "} + token->Dump();
+    errmsg_ = std::string{"parser: error near token "} + token->dump();
     delete token;
     prev_token_ = TokenType::Wrong;
     return true;
@@ -194,12 +198,12 @@ bool Parser::ToRpnHandleRightBracketToken(
 
   if (prev_token_ != TokenType::Number &&
       prev_token_ != TokenType::RightBracket) {
-    errmsg_ = std::string{"parser: error near token "} + token->Dump();
+    errmsg_ = std::string{"parser: error near token "} + token->dump();
     prev_token_ = TokenType::Wrong;
     return true;
   }
 
-  while (!stack.empty() && stack.top()->Type() != TokenType::LeftBracket) {
+  while (!stack.empty() && stack.top()->type != TokenType::LeftBracket) {
     rpn.Push(stack.top());
     stack.pop();
   }
@@ -211,7 +215,7 @@ bool Parser::ToRpnHandleRightBracketToken(
   }
 
   stack.pop();
-  if (!stack.empty() && stack.top()->Type() == TokenType::Function) {
+  if (!stack.empty() && stack.top()->type == TokenType::Function) {
     rpn.Push(stack.top());
     stack.pop();
   }
@@ -221,17 +225,24 @@ bool Parser::ToRpnHandleRightBracketToken(
   return false;
 }
 
-AToken *Parser::ToRpnHandleNameToken(NameToken *token, const VarMap &vars) {
-	AToken *new_token{nullptr};
- 
-	VarMap::const_iterator vars_it = vars.find(token->Name());
-	if (vars_it != vars.end()) {
-		new_token = new NumberToken(vars_it->second);
-	}
+AToken *Parser::ToRpnHandleNameToken(NameToken *token, const VarMap &vars,
+                                     const FuncMap &funcs) {
+  AToken *new_token{nullptr};
 
-	delete token;
+  // if (varmode_ && (token->name == "x" || token->name == "X")) {
+  //	token = new VarToken{};
+  // } else {
+  VarMap::const_iterator vars_it = vars.find(token->name);
+  if (vars_it != vars.end()) {
+    new_token = new NumberToken(vars_it->second);
+  }
+  //}
 
-	return new_token;
+  delete token;
+
+  (void)funcs;
+
+  return new_token;
 }
 
 }  // namespace smartcalc

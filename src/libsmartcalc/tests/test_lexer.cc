@@ -18,7 +18,7 @@ TEST_F(LexerTest, EmptyString) {
 	EXPECT_TRUE(lexer.Empty());
 
 	AToken *token = lexer.NextToken();
-	EXPECT_EQ(token->Type(), TokenType::Empty);
+	EXPECT_EQ(token->type, TokenType::Empty);
 	delete token;
 }
 
@@ -27,7 +27,7 @@ TEST_F(LexerTest, SpaceString) {
 	EXPECT_TRUE(lexer.Empty());
 
 	AToken *token = lexer.NextToken();
-	EXPECT_EQ(token->Type(), TokenType::Empty);
+	EXPECT_EQ(token->type, TokenType::Empty);
 	delete token;
 }
 
@@ -36,10 +36,10 @@ TEST_F(LexerTest, NumberTest) {
 	EXPECT_FALSE(lexer.Empty());
 
 	AToken *token = lexer.NextToken();
-	EXPECT_EQ(token->Type(), TokenType::Number);
+	EXPECT_EQ(token->type, TokenType::Number);
 
 	NumberToken *num = static_cast<NumberToken *>(token);
-	EXPECT_EQ(num->Value(), 123.0);
+	EXPECT_EQ(num->value, 123.0);
 
 	EXPECT_TRUE(lexer.Empty());
 
@@ -51,7 +51,7 @@ TEST_F(LexerTest, HugeValueTest) {
 	EXPECT_FALSE(lexer.Empty());
 
 	AToken *token = lexer.NextToken();
-	EXPECT_EQ(token->Type(), TokenType::Wrong);
+	EXPECT_EQ(token->type, TokenType::Wrong);
 
 	std::cout << static_cast<WrongToken*>(token)->errmsg << std::endl;
 
@@ -67,7 +67,7 @@ TEST_F(LexerTest, ExpressionTest01) {
 	size_t i = 0;
 	for (; i < sizeof(arr) / sizeof(std::string) && !lexer.Empty(); ++i) {
 		AToken *token = lexer.NextToken();
-		EXPECT_EQ(arr[i], token->Dump());
+		EXPECT_EQ(arr[i], token->dump());
 		delete token;
 	}
 
@@ -82,7 +82,7 @@ TEST_F(LexerTest, ExpressionTest02) {
 	size_t i = 0;
 	for (; i < sizeof(arr) / sizeof(std::string) && !lexer.Empty(); ++i) {
 		AToken *token = lexer.NextToken();
-		EXPECT_EQ(arr[i], token->Dump());
+		EXPECT_EQ(arr[i], token->dump());
 		delete token;
 	}
 
@@ -101,7 +101,7 @@ TEST_F(LexerTest, ExpressionTest03) {
 	size_t i = 0;
 	for (; i < sizeof(arr) / sizeof(std::string) && !lexer.Empty(); ++i) {
 		AToken *token = lexer.NextToken();
-		EXPECT_EQ(arr[i], token->Dump());
+		EXPECT_EQ(arr[i], token->dump());
 		delete token;
 	}
 
@@ -118,7 +118,7 @@ TEST_F(LexerTest, ExpressionTest04) {
 	size_t i = 0;
 	for (; i < sizeof(arr) / sizeof(std::string) && !lexer.Empty(); ++i) {
 		AToken *token = lexer.NextToken();
-		EXPECT_EQ(arr[i], token->Dump());
+		EXPECT_EQ(arr[i], token->dump());
 		delete token;
 	}
 

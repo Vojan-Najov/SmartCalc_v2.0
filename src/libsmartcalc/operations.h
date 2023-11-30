@@ -9,27 +9,27 @@ namespace smartcalc {
 
 namespace unary_ops {
 
-AToken *plus(const AToken *token);
-AToken *minus(const AToken *token);
-AToken *ln(const AToken *token);
-AToken *log(const AToken *token);
-AToken *sin(const AToken *token);
-AToken *cos(const AToken *token);
-AToken *tan(const AToken *token);
-AToken *asin(const AToken *token);
-AToken *acos(const AToken *token);
-AToken *atan(const AToken *token);
+AToken *plus(const NumberToken *token);
+AToken *minus(const NumberToken *token);
+AToken *ln(const NumberToken *token);
+AToken *log(const NumberToken *token);
+AToken *sin(const NumberToken *token);
+AToken *cos(const NumberToken *token);
+AToken *tan(const NumberToken *token);
+AToken *asin(const NumberToken *token);
+AToken *acos(const NumberToken *token);
+AToken *atan(const NumberToken *token);
 
 }  // namespace unary_ops
 
 namespace binary_ops {
 
-AToken *sum(const AToken *lhs, const AToken *rhs);
-AToken *sub(const AToken *lhs, const AToken *rhs);
-AToken *multiply(const AToken *lhs, const AToken *rhs);
-AToken *devide(const AToken *lhs, const AToken *rhs);
-AToken *power(const AToken *lhs, const AToken *rhs);
-AToken *module(const AToken *lhs, const AToken *rhs);
+AToken *sum(const NumberToken *lhs, const NumberToken *rhs);
+AToken *sub(const NumberToken *lhs, const NumberToken *rhs);
+AToken *multiply(const NumberToken *lhs, const NumberToken *rhs);
+AToken *devide(const NumberToken *lhs, const NumberToken *rhs);
+AToken *power(const NumberToken *lhs, const NumberToken *rhs);
+AToken *module(const NumberToken *lhs, const NumberToken *rhs);
 
 }  // namespace binary_ops
 

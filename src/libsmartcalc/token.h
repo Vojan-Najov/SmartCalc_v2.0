@@ -8,134 +8,203 @@ namespace s21 {
 
 namespace smartcalc {
 
+/*
+ *  TOKEN TYPES
+ */
 enum class TokenType {
   Empty,
   Wrong,
   Number,
+  Var,
   UnaryOp,
   BinaryOp,
-  Var,
   Function,
   LeftBracket,
   RightBracket,
   Name,
 };
 
+/*
+ *  ABSTRACT TOKEN CLASS
+ */
 class AToken {
  public:
-  virtual TokenType Type(void) const noexcept = 0;
-  virtual std::string Dump(void) const = 0;
-  virtual ~AToken(void){};
-};
+  const TokenType type;
 
-class AValue : public AToken {
  public:
-  virtual double Value(void) const noexcept = 0;
+  AToken(TokenType type) : type{type} {}
+  virtual ~AToken(void) {}
+
+ public:
+  virtual AToken *clone(void) const = 0;
+  virtual std::string dump(void) const = 0;
 };
 
+/*
+ *  EMPTY TOKEN
+ */
 class EmptyToken : public AToken {
  public:
-  TokenType Type(void) const noexcept override;
-  std::string Dump(void) const override;
+  EmptyToken(void);
   ~EmptyToken(void);
+
+ public:
+  EmptyToken *clone(void) const override;
+  std::string dump(void) const override;
 };
 
+/*
+ *  WRONG TOKEN
+ */
 class WrongToken : public AToken {
  public:
+  std::string errmsg;
+
+ public:
   WrongToken(const std::string &str);
-  TokenType Type(void) const noexcept override;
-  std::string Dump(void) const override;
   ~WrongToken(void);
 
  public:
-  std::string errmsg;
+  WrongToken *clone(void) const override;
+  std::string dump(void) const override;
 };
 
-class NumberToken : public AValue {
+/*
+ *  NUMBER TOKEN
+ */
+class NumberToken : public AToken {
  public:
-  NumberToken(double value) noexcept;
-  TokenType Type(void) const noexcept override;
-  std::string Dump(void) const override;
-  double Value(void) const noexcept override;
+  double value;
+
+ public:
+  NumberToken(double value);
   ~NumberToken(void);
 
- private:
-  double value_;
+ public:
+  NumberToken *clone(void) const override;
+  std::string dump(void) const override;
 };
 
+/*
+ *  VAR TOKEN
+ */
+class VarToken : public AToken {
+ public:
+  VarToken(void);
+  ~VarToken(void);
+
+ public:
+  VarToken *clone(void) const override;
+  std::string dump(void) const override;
+};
+
+/*
+ *  UNARY OPERATOR TOKEN
+ */
 class UnaryOpToken : public AToken {
  public:
-  using Unop = AToken *(*)(const AToken *token);
+  using Unop = AToken *(*)(const NumberToken *token);
 
  public:
-  UnaryOpToken(Unop unop) noexcept;
-  TokenType Type(void) const noexcept override;
-  std::string Dump(void) const override;
-  AToken *Apply(const AToken *token) const;
+  Unop apply;
+
+ public:
+  UnaryOpToken(Unop unop);
   ~UnaryOpToken(void);
 
- private:
-  Unop unop_;
+ public:
+  UnaryOpToken *clone(void) const override;
+  std::string dump(void) const override;
 };
 
+/*
+ *  BINARY OPERATOR TOKEN
+ */
 class BinaryOpToken : public AToken {
  public:
-  using Binop = AToken *(*)(const AToken *lhs, const AToken *rhs);
+  using Binop = AToken *(*)(const NumberToken *lhs, const NumberToken *rhs);
 
  public:
-  BinaryOpToken(Binop binop) noexcept;
-  TokenType Type(void) const noexcept override;
-  std::string Dump(void) const override;
-  AToken *Apply(const AToken *lhs, const AToken *rhs) const;
-  int Precedence(void) const noexcept;
-  bool LeftAssociative(void) const noexcept;
+  Binop apply;
+
+ public:
+  BinaryOpToken(Binop binop);
   ~BinaryOpToken(void);
 
- private:
-  Binop binop_;
+ public:
+  BinaryOpToken *clone(void) const override;
+  std::string dump(void) const override;
+
+ public:
+  int precedence(void) const noexcept;
+  bool left_associative(void) const noexcept;
 };
 
+/*
+ * BUILT IN FUNCTION TOKEN
+ */
 class FuncToken : public AToken {
  public:
-  using Unop = AToken *(*)(const AToken *token);
+  using Func = AToken *(*)(const NumberToken *token);
 
  public:
-  FuncToken(Unop unop) noexcept;
-  TokenType Type(void) const noexcept override;
-  std::string Dump(void) const override;
-  AToken *Apply(const AToken *token) const;
+  Func apply;
+
+ public:
+  FuncToken(Func func);
   ~FuncToken(void);
 
- private:
-  Unop unop_;
+ public:
+  FuncToken *clone(void) const override;
+  std::string dump(void) const override;
 };
 
+/*
+ *  LEFT BRACKET TOKEN
+ */
 class LeftBracketToken : public AToken {
  public:
-  TokenType Type(void) const noexcept override;
-  std::string Dump(void) const override;
+  LeftBracketToken(void);
   ~LeftBracketToken(void);
+
+ public:
+  LeftBracketToken *clone(void) const override;
+  std::string dump(void) const override;
 };
 
+/*
+ *  RIGHT BRACKET TOKEN
+ */
 class RightBracketToken : public AToken {
  public:
-  TokenType Type(void) const noexcept override;
-  std::string Dump(void) const override;
   ~RightBracketToken(void);
+  RightBracketToken(void);
+
+ public:
+  RightBracketToken *clone(void) const override;
+  std::string dump(void) const override;
 };
 
+/*
+ *  NAME TOKEN
+ */
 class NameToken : public AToken {
  public:
-  NameToken(const char *start, size_t n);
-  TokenType Type(void) const noexcept override;
-  std::string Dump(void) const override;
-  const char *Name(void) const noexcept;
+  std::string name;
+
+ public:
+  NameToken(const char *str, size_t n);
+  NameToken(const std::string &name);
   ~NameToken(void);
 
- private:
-  std::string name_;
+ public:
+  NameToken *clone(void) const override;
+  std::string dump(void) const override;
 };
 
+/*
+ *  OVERLOADING OSTREAM OPERATOR << TOKEN TYPE
+ */
 std::ostream &operator<<(std::ostream &out, TokenType type);
 
 }  // namespace smartcalc

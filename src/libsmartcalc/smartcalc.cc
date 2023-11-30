@@ -15,12 +15,13 @@ Smartcalc::Smartcalc(void) {
   vars_.emplace("E", E);
 }
 
-double Smartcalc::CalculateExpression(const char *expr) const {
+double Smartcalc::CalculateExpression(const char *expr) {
   smartcalc::Parser parser(expr);
   smartcalc::Rpn rpn = parser.ToRpn(vars_, funcs_);
 
   if (parser.Error()) {
-    return std::nan("");  // handle error
+		errmsg_ = parser.ErrorMessage();
+    return std::nan("");
   }
 
   if (!rpn.Calculate()) {
@@ -35,7 +36,8 @@ bool Smartcalc::SetVariable(const char *name, const char *expr) {
   smartcalc::Rpn rpn = parser.ToRpn(vars_, funcs_);
 
   if (parser.Error()) {
-    return false;  // handle error
+		errmsg_ = parser.ErrorMessage();
+    return false;
   }
 
   if (!rpn.Calculate()) {
@@ -55,7 +57,8 @@ bool Smartcalc::SetFunction(const char *name, const char *expr) {
   smartcalc::Parser parser(expr, true);
   smartcalc::Rpn rpn = parser.ToRpn(vars_, funcs_);
   if (parser.Error()) {
-    return false;  // handle error
+		errmsg_ = parser.ErrorMessage();
+    return false;
   }
 
   //	if (!rpn.Optimize()) {
@@ -65,5 +68,9 @@ bool Smartcalc::SetFunction(const char *name, const char *expr) {
   funcs_[name] = std::move(rpn);
   return true;
 }
+
+bool Smartcalc::Error(void) const { return !errmsg_.empty(); }
+
+std::string Smartcalc::ErrorMessage(void) const { return errmsg_; }
 
 }  // namespace s21

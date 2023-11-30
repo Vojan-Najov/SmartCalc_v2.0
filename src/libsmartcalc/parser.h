@@ -24,7 +24,7 @@ class Parser final {
 
  public:
   bool Error(void) const noexcept;
-  const std::string &ErrorMessage(void) const noexcept;
+  std::string ErrorMessage(void) const;
 
  public:
   Rpn ToRpn(const VarMap &vars, const FuncMap &funcs);

@@ -14,7 +14,7 @@ Parser::Parser(const char *expr, bool x_is_var) noexcept
 
 bool Parser::Error(void) const noexcept { return !errmsg_.empty(); }
 
-const std::string &Parser::ErrorMessage(void) const noexcept { return errmsg_; }
+std::string Parser::ErrorMessage(void) const { return errmsg_; }
 
 Rpn Parser::ToRpn(const VarMap &vars, const FuncMap &funcs) {
   Rpn rpn;

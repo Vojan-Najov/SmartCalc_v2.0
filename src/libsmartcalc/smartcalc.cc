@@ -52,6 +52,8 @@ Smartcalc::Smartcalc(void) : result_{0.0} {
 }
 
 bool Smartcalc::CalculateExpression(const char *expr) {
+  errmsg_.clear();
+
   smartcalc::Parser parser{expr};
   smartcalc::Rpn rpn = parser.ToRpn(vars_, funcs_);
 
@@ -70,6 +72,8 @@ bool Smartcalc::CalculateExpression(const char *expr) {
 }
 
 bool Smartcalc::SetVariable(const char *name, const char *expr) {
+  errmsg_.clear();
+
   smartcalc::Parser parser(expr);
   smartcalc::Rpn rpn = parser.ToRpn(vars_, funcs_);
 
@@ -89,6 +93,8 @@ bool Smartcalc::SetVariable(const char *name, const char *expr) {
 }
 
 bool Smartcalc::SetFunction(const char *name, const char *expr) {
+  errmsg_.clear();
+
   if (vars_.find(name) != vars_.end()) {
     return false;  // handle error
   }

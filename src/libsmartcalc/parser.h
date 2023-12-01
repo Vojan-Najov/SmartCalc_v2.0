@@ -27,28 +27,31 @@ class Parser final {
   std::string ErrorMessage(void) const;
 
  public:
+  void SetExpr(const char *expr) noexcept;
+  void XisVar(bool flag) noexcept;
   Rpn ToRpn(const VarMap &vars, const FuncMap &funcs);
 
  private:
   bool ToRpnHandleWrongToken(AToken *token);
   bool ToRpnHandleNumberToken(AToken *token, Rpn &rpn);
-  bool ToRpnHandleFuncToken(AToken *token,
-                            std::stack<std::unique_ptr<AToken>> &stack);
+  bool ToRpnHandleVarToken(AToken *token, Rpn &rpn);
   bool ToRpnHandleUnaryOpToken(AToken *token,
                                std::stack<std::unique_ptr<AToken>> &stack);
   bool ToRpnHandleBinaryOpToken(AToken *token,
                                 std::stack<std::unique_ptr<AToken>> &stack,
                                 Rpn &rpn);
+  bool ToRpnHandleFuncToken(AToken *token,
+                            std::stack<std::unique_ptr<AToken>> &stack);
   bool ToRpnHandleLeftBracketToken(AToken *token,
                                    std::stack<std::unique_ptr<AToken>> &stack);
   bool ToRpnHandleRightBracketToken(AToken *token,
                                     std::stack<std::unique_ptr<AToken>> &stack,
                                     Rpn &rpn);
-  AToken *ToRpnHandleNameToken(NameToken *token, const VarMap &vars,
+  AToken *ToRpnHandleNameToken(AToken *token, const VarMap &vars,
                                const FuncMap &funcs);
 
  private:
-  Lexer lexer_;
+  const char *expr_;
   std::string errmsg_;
   TokenType prev_token_;
   bool x_is_var_;

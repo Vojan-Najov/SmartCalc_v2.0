@@ -19,35 +19,35 @@ Smartcalc::Smartcalc(void) : result_{0.0} {
   smartcalc::Rpn rpn{};
 
   rpn.Push(new smartcalc::VarToken{});
-  rpn.Push(new smartcalc::FuncToken{&smartcalc::unary_ops::sin});
+  rpn.Push(new smartcalc::FuncToken{&smartcalc::funcs::sin});
   funcs_["sin"] = std::move(rpn);
 
   rpn.Push(new smartcalc::VarToken{});
-  rpn.Push(new smartcalc::FuncToken{&smartcalc::unary_ops::cos});
+  rpn.Push(new smartcalc::FuncToken{&smartcalc::funcs::cos});
   funcs_["cos"] = std::move(rpn);
 
   rpn.Push(new smartcalc::VarToken{});
-  rpn.Push(new smartcalc::FuncToken{&smartcalc::unary_ops::tan});
+  rpn.Push(new smartcalc::FuncToken{&smartcalc::funcs::tan});
   funcs_["tan"] = std::move(rpn);
 
   rpn.Push(new smartcalc::VarToken{});
-  rpn.Push(new smartcalc::FuncToken{&smartcalc::unary_ops::asin});
+  rpn.Push(new smartcalc::FuncToken{&smartcalc::funcs::asin});
   funcs_["asin"] = std::move(rpn);
 
   rpn.Push(new smartcalc::VarToken{});
-  rpn.Push(new smartcalc::FuncToken{&smartcalc::unary_ops::acos});
+  rpn.Push(new smartcalc::FuncToken{&smartcalc::funcs::acos});
   funcs_["acos"] = std::move(rpn);
 
   rpn.Push(new smartcalc::VarToken{});
-  rpn.Push(new smartcalc::FuncToken{&smartcalc::unary_ops::atan});
+  rpn.Push(new smartcalc::FuncToken{&smartcalc::funcs::atan});
   funcs_["atan"] = std::move(rpn);
 
   rpn.Push(new smartcalc::VarToken{});
-  rpn.Push(new smartcalc::FuncToken{&smartcalc::unary_ops::ln});
+  rpn.Push(new smartcalc::FuncToken{&smartcalc::funcs::ln});
   funcs_["ln"] = std::move(rpn);
 
   rpn.Push(new smartcalc::VarToken{});
-  rpn.Push(new smartcalc::FuncToken{&smartcalc::unary_ops::log});
+  rpn.Push(new smartcalc::FuncToken{&smartcalc::funcs::log});
   funcs_["log"] = std::move(rpn);
 }
 

@@ -28,7 +28,7 @@ AToken *Lexer::NextToken(void) {
   } else if (std::strchr("-+*/^%()", *expr_) != nullptr) {
     token = SingleCharacterLexem();
   } else if (std::strncmp(expr_, "mod", 3) == 0) {
-    token = new BinaryOpToken{&binary_ops::module};
+    token = new BinaryOpToken{&binary_ops::modulo};
     expr_ += 3;
   } else if (std::isdigit(*expr_)) {
     token = NumericLexem();
@@ -69,7 +69,7 @@ AToken *Lexer::SingleCharacterLexem(void) {
       token = new BinaryOpToken{&binary_ops::power};
       break;
     case '%':
-      token = new BinaryOpToken{&binary_ops::module};
+      token = new BinaryOpToken{&binary_ops::modulo};
       break;
     case '(':
       token = new LeftBracketToken{};
@@ -116,21 +116,21 @@ AToken *Lexer::MultiCharacterLexem(void) {
 
   size_t n = end - expr_;
   if (n == 2 && std::strncmp(expr_, "ln", 2) == 0) {
-    token = new FuncToken{&unary_ops::ln};
+    token = new FuncToken{&funcs::ln};
   } else if (n == 3 && std::strncmp(expr_, "log", 3) == 0) {
-    token = new FuncToken{&unary_ops::log};
+    token = new FuncToken{&funcs::log};
   } else if (n == 3 && std::strncmp(expr_, "sin", 3) == 0) {
-    token = new FuncToken{&unary_ops::sin};
+    token = new FuncToken{&funcs::sin};
   } else if (n == 3 && std::strncmp(expr_, "cos", 3) == 0) {
-    token = new FuncToken{&unary_ops::cos};
+    token = new FuncToken{&funcs::cos};
   } else if (n == 3 && std::strncmp(expr_, "tan", 3) == 0) {
-    token = new FuncToken{&unary_ops::tan};
+    token = new FuncToken{&funcs::tan};
   } else if (n == 4 && std::strncmp(expr_, "asin", 4) == 0) {
-    token = new FuncToken{&unary_ops::asin};
+    token = new FuncToken{&funcs::asin};
   } else if (n == 4 && std::strncmp(expr_, "acos", 4) == 0) {
-    token = new FuncToken{&unary_ops::acos};
+    token = new FuncToken{&funcs::acos};
   } else if (n == 4 && std::strncmp(expr_, "atan", 4) == 0) {
-    token = new FuncToken{&unary_ops::atan};
+    token = new FuncToken{&funcs::atan};
   } else {
     token = new NameToken{expr_, n};
   }

@@ -107,7 +107,7 @@ std::string BinaryOpToken::dump(void) const {
     s = "/";
   } else if (apply == &binary_ops::power) {
     s = "^";
-  } else if (apply == &binary_ops::module) {
+  } else if (apply == &binary_ops::modulo) {
     s = "%";
   }
 
@@ -127,7 +127,7 @@ int BinaryOpToken::precedence(void) const noexcept {
     prec = 2;
   } else if (apply == &binary_ops::power) {
     prec = 2;
-  } else if (apply == &binary_ops::module) {
+  } else if (apply == &binary_ops::modulo) {
     prec = 2;
   }
 
@@ -151,21 +151,21 @@ FuncToken *FuncToken::clone(void) const { return new FuncToken{apply}; }
 std::string FuncToken::dump(void) const {
   const char *s = "unknow function";
 
-  if (apply == &unary_ops::sin) {
+  if (apply == &funcs::sin) {
     s = "sin";
-  } else if (apply == &unary_ops::cos) {
+  } else if (apply == &funcs::cos) {
     s = "cos";
-  } else if (apply == &unary_ops::tan) {
+  } else if (apply == &funcs::tan) {
     s = "tan";
-  } else if (apply == &unary_ops::asin) {
+  } else if (apply == &funcs::asin) {
     s = "asin";
-  } else if (apply == &unary_ops::acos) {
+  } else if (apply == &funcs::acos) {
     s = "acos";
-  } else if (apply == &unary_ops::atan) {
+  } else if (apply == &funcs::atan) {
     s = "atan";
-  } else if (apply == &unary_ops::ln) {
+  } else if (apply == &funcs::ln) {
     s = "ln";
-  } else if (apply == &unary_ops::log) {
+  } else if (apply == &funcs::log) {
     s = "log";
   }
 

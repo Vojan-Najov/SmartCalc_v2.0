@@ -18,6 +18,10 @@ AToken *minus(const NumberToken *token) {
   return new NumberToken{-num};
 }
 
+}  // namespace unary_ops
+
+namespace funcs {
+
 AToken *ln(const NumberToken *token) {
   double num = token->value;
   return new NumberToken{std::log(num)};
@@ -58,7 +62,8 @@ AToken *atan(const NumberToken *token) {
   return new NumberToken{std::atan(num)};
 }
 
-}  // namespace unary_ops
+}  // namespace funcs
+
 
 namespace binary_ops {
 
@@ -92,7 +97,7 @@ AToken *power(const NumberToken *lhs, const NumberToken *rhs) {
   return new NumberToken{std::pow(numl, numr)};
 }
 
-AToken *module(const NumberToken *lhs, const NumberToken *rhs) {
+AToken *modulo(const NumberToken *lhs, const NumberToken *rhs) {
   double numl = lhs->value;
   double numr = rhs->value;
   return new NumberToken{std::fmod(numl, numr)};

@@ -202,3 +202,62 @@ TEST_F(SmartcalcTest, Expression19) {
   EXPECT_DOUBLE_EQ(sc.Result(), result);
 }
 
+TEST_F(SmartcalcTest, Expression20) {
+  Smartcalc sc{};
+  double result = std::pow(2.0, std::pow(2.0, 3.0));
+  const char *expr = "   2 ^ 2 ^ 3 ";
+
+  bool ret = sc.CalculateExpression(expr);
+  EXPECT_TRUE(ret);
+  EXPECT_DOUBLE_EQ(sc.Result(), result);
+}
+
+TEST_F(SmartcalcTest, Expression21) {
+  Smartcalc sc{};
+  double result = 2.0 * std::pow(2.0, 3.0);
+  const char *expr = "   2 * 2 ^ 3 ";
+
+  bool ret = sc.CalculateExpression(expr);
+  EXPECT_TRUE(ret);
+  EXPECT_DOUBLE_EQ(sc.Result(), result);
+}
+
+TEST_F(SmartcalcTest, Expression22) {
+  Smartcalc sc{};
+  double result = std::pow(2.0, 3.0) / 5;
+  const char *expr = "  2 ^ 3 / 5 ";
+
+  bool ret = sc.CalculateExpression(expr);
+  EXPECT_TRUE(ret);
+  EXPECT_DOUBLE_EQ(sc.Result(), result);
+}
+
+TEST_F(SmartcalcTest, Expression23) {
+  Smartcalc sc{};
+  const char *expr = " 2 + 3 + ";
+
+  bool ret = sc.CalculateExpression(expr);
+  EXPECT_FALSE(ret);
+  EXPECT_EQ(sc.ErrorMessage(),
+            std::string{"parser: error near the end of the line"});
+}
+
+TEST_F(SmartcalcTest, Expression24) {
+  Smartcalc sc{};
+  const char *expr = " (2 + 3 ";
+
+  bool ret = sc.CalculateExpression(expr);
+  EXPECT_FALSE(ret);
+  EXPECT_EQ(sc.ErrorMessage(),
+            std::string{"parser: unpaired brackets"});
+}
+
+TEST_F(SmartcalcTest, Expression25) {
+  Smartcalc sc{};
+  const char *expr = " 2 + 3 - 4) ";
+
+  bool ret = sc.CalculateExpression(expr);
+  EXPECT_FALSE(ret);
+  EXPECT_EQ(sc.ErrorMessage(),
+            std::string{"parser: unpaired brackets"});
+}

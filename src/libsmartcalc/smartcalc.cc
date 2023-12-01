@@ -1,10 +1,11 @@
+#include "smartcalc.h"
+
 #include <cmath>
 #include <utility>
 
-#include "smartcalc.h"
-#include "token.h"
 #include "operations.h"
 #include "parser.h"
+#include "token.h"
 
 namespace s21 {
 
@@ -19,39 +20,39 @@ Smartcalc::Smartcalc(void) : result_{0.0} {
 
   rpn.Push(new smartcalc::VarToken{});
   rpn.Push(new smartcalc::FuncToken{&smartcalc::unary_ops::sin});
-  funcs_["sin"] = std::move(rpn); 
+  funcs_["sin"] = std::move(rpn);
 
   rpn.Push(new smartcalc::VarToken{});
   rpn.Push(new smartcalc::FuncToken{&smartcalc::unary_ops::cos});
-  funcs_["cos"] = std::move(rpn); 
+  funcs_["cos"] = std::move(rpn);
 
   rpn.Push(new smartcalc::VarToken{});
   rpn.Push(new smartcalc::FuncToken{&smartcalc::unary_ops::tan});
-  funcs_["tan"] = std::move(rpn); 
+  funcs_["tan"] = std::move(rpn);
 
   rpn.Push(new smartcalc::VarToken{});
   rpn.Push(new smartcalc::FuncToken{&smartcalc::unary_ops::asin});
-  funcs_["asin"] = std::move(rpn); 
+  funcs_["asin"] = std::move(rpn);
 
   rpn.Push(new smartcalc::VarToken{});
   rpn.Push(new smartcalc::FuncToken{&smartcalc::unary_ops::acos});
-  funcs_["acos"] = std::move(rpn); 
+  funcs_["acos"] = std::move(rpn);
 
   rpn.Push(new smartcalc::VarToken{});
   rpn.Push(new smartcalc::FuncToken{&smartcalc::unary_ops::atan});
-  funcs_["atan"] = std::move(rpn); 
+  funcs_["atan"] = std::move(rpn);
 
   rpn.Push(new smartcalc::VarToken{});
   rpn.Push(new smartcalc::FuncToken{&smartcalc::unary_ops::ln});
-  funcs_["ln"] = std::move(rpn); 
+  funcs_["ln"] = std::move(rpn);
 
   rpn.Push(new smartcalc::VarToken{});
   rpn.Push(new smartcalc::FuncToken{&smartcalc::unary_ops::log});
-  funcs_["log"] = std::move(rpn); 
+  funcs_["log"] = std::move(rpn);
 }
 
 bool Smartcalc::CalculateExpression(const char *expr) {
-  smartcalc::Parser parser(expr);
+  smartcalc::Parser parser{expr};
   smartcalc::Rpn rpn = parser.ToRpn(vars_, funcs_);
 
   if (parser.Error()) {
@@ -60,7 +61,7 @@ bool Smartcalc::CalculateExpression(const char *expr) {
   }
 
   if (!rpn.Calculate()) {
-	return false;  // handle error
+    return false;  // handle error
   }
 
   result_ = rpn.Result();
@@ -72,7 +73,7 @@ bool Smartcalc::SetVariable(const char *name, const char *expr) {
   smartcalc::Rpn rpn = parser.ToRpn(vars_, funcs_);
 
   if (parser.Error()) {
-		errmsg_ = parser.ErrorMessage();
+    errmsg_ = parser.ErrorMessage();
     return false;
   }
 
@@ -93,7 +94,7 @@ bool Smartcalc::SetFunction(const char *name, const char *expr) {
   smartcalc::Parser parser(expr, true);
   smartcalc::Rpn rpn = parser.ToRpn(vars_, funcs_);
   if (parser.Error()) {
-		errmsg_ = parser.ErrorMessage();
+    errmsg_ = parser.ErrorMessage();
     return false;
   }
 

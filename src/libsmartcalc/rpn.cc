@@ -6,9 +6,10 @@ namespace s21 {
 
 namespace smartcalc {
 
-Rpn::Rpn(void) : result_{0.0}, rpn_{} {}
+Rpn::Rpn(void) : result_{0.0}, errmsg_{}, rpn_{} {}
 
-Rpn::Rpn(const Rpn &copy) : result_{copy.result_}, rpn_{} {
+Rpn::Rpn(const Rpn &copy)
+    : result_{copy.result_}, errmsg_{copy.errmsg_}, rpn_{} {
   ConstIterator it = copy.begin();
   ConstIterator last = copy.end();
   for (; it != last; ++it) {
@@ -16,12 +17,17 @@ Rpn::Rpn(const Rpn &copy) : result_{copy.result_}, rpn_{} {
   }
 }
 
-Rpn::Rpn(Rpn &&other) : result_{other.result_}, rpn_{std::move(other.rpn_)} {
+Rpn::Rpn(Rpn &&other)
+    : result_{other.result_},
+      errmsg_{std::move(other.errmsg_)},
+      rpn_{std::move(other.rpn_)} {
   other.result_ = 0.0;
 }
 
 Rpn &Rpn::operator=(const Rpn &other) {
   if (this != &other) {
+    result_ = other.result_;
+    errmsg_ = other.errmsg_;
     rpn_.clear();
     ConstIterator it = other.begin();
     ConstIterator last = other.end();
@@ -35,9 +41,10 @@ Rpn &Rpn::operator=(const Rpn &other) {
 
 Rpn &Rpn::operator=(Rpn &&other) {
   if (this != &other) {
-    rpn_ = std::move(other.rpn_);
     result_ = other.result_;
     other.result_ = 0.0;
+    errmsg_ = std::move(other.errmsg_);
+    rpn_ = std::move(other.rpn_);
   }
 
   return *this;
@@ -48,6 +55,10 @@ Rpn::~Rpn(void) {}
 Rpn::ConstIterator Rpn::begin(void) const noexcept { return rpn_.begin(); }
 
 Rpn::ConstIterator Rpn::end(void) const noexcept { return rpn_.end(); }
+
+bool Rpn::Error(void) const noexcept { return !errmsg_.empty(); }
+
+std::string Rpn::ErrorMessage(void) const { return errmsg_; }
 
 void Rpn::Push(AToken *token) { rpn_.emplace_back(token); }
 

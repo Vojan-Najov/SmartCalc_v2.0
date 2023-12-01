@@ -3,6 +3,7 @@
 
 #include <deque>
 #include <memory>
+#include <string>
 
 #include "token.h"
 
@@ -27,6 +28,10 @@ class Rpn {
   ConstIterator end(void) const noexcept;
 
  public:
+  bool Error(void) const noexcept;
+  std::string ErrorMessage(void) const;
+
+ public:
   void Push(AToken *token);
   void Push(std::unique_ptr<AToken> &token_ptr);
   bool Calculate(void);
@@ -39,6 +44,7 @@ class Rpn {
 
  private:
   double result_ = 0.0;
+  std::string errmsg_;
   std::deque<std::unique_ptr<AToken>> rpn_;
 };
 

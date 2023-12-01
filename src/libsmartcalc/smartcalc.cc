@@ -61,7 +61,8 @@ bool Smartcalc::CalculateExpression(const char *expr) {
   }
 
   if (!rpn.Calculate()) {
-    return false;  // handle error
+    errmsg_ = rpn.ErrorMessage();
+    return false;
   }
 
   result_ = rpn.Result();
@@ -78,7 +79,8 @@ bool Smartcalc::SetVariable(const char *name, const char *expr) {
   }
 
   if (!rpn.Calculate()) {
-    return false;  // handle error
+    errmsg_ = rpn.ErrorMessage();
+    return false;
   }
 
   vars_[name] = rpn.Result();

@@ -108,13 +108,6 @@ bool Parser::ToRpnHandleNumberToken(AToken *token, Rpn &rpn) {
 }
 
 bool Parser::ToRpnHandleVarToken(AToken *token, Rpn &rpn) {
-  (void)token;
-  (void)rpn;
-  return false;
-}
-
-bool Parser::ToRpnHandleFuncToken(AToken *token,
-                                  std::stack<std::unique_ptr<AToken>> &stack) {
   if (prev_token_ != TokenType::Empty && prev_token_ != TokenType::UnaryOp &&
       prev_token_ != TokenType::BinaryOp &&
       prev_token_ != TokenType::LeftBracket) {
@@ -124,20 +117,9 @@ bool Parser::ToRpnHandleFuncToken(AToken *token,
     return true;
   }
 
-  stack.emplace(token);
-  prev_token_ = TokenType::Function;
+  rpn.Push(token);
+  prev_token_ = TokenType::Var;
 
-  /*
-          token = lexer_.NextToken();
-          if (token->type != TokenType::LeftBracket) {
-                  errmsg_ = std::string{"parser: error near token "} +
-     stack.top()->dump(); delete token; prev_token_ = TokenType::Wrong; return
-     true;
-          }
-
-          stack.emplace(token);
-          prev_token_ = TokenType::LeftBracket;
-  */
   return false;
 }
 
@@ -159,7 +141,9 @@ bool Parser::ToRpnHandleUnaryOpToken(
 
 bool Parser::ToRpnHandleBinaryOpToken(
     AToken *token, std::stack<std::unique_ptr<AToken>> &stack, Rpn &rpn) {
-  if (prev_token_ != TokenType::Number &&
+  BinaryOpToken *binop = static_cast<BinaryOpToken *>(token);
+
+  if (prev_token_ != TokenType::Number && prev_token_ != TokenType::Var &&
       prev_token_ != TokenType::RightBracket) {
     errmsg_ = std::string{"parser: error near token "} + token->dump();
     delete token;
@@ -173,11 +157,9 @@ bool Parser::ToRpnHandleBinaryOpToken(
       rpn.Push(op);
       stack.pop();
     } else if (op->type == TokenType::BinaryOp) {
-      int cur_precedence = static_cast<BinaryOpToken *>(token)->precedence();
+      int cur_precedence = binop->precedence();
       int op_precedence = static_cast<BinaryOpToken *>(op.get())->precedence();
-      bool left_associative =
-          static_cast<BinaryOpToken *>(token)->left_associative();
-
+      bool left_associative = binop->left_associative();
       if (op_precedence > cur_precedence ||
           ((op_precedence == cur_precedence) && left_associative)) {
         rpn.Push(op);
@@ -192,6 +174,24 @@ bool Parser::ToRpnHandleBinaryOpToken(
 
   stack.emplace(token);
   prev_token_ = TokenType::BinaryOp;
+
+  return false;
+}
+
+bool Parser::ToRpnHandleFuncToken(AToken *token,
+                                  std::stack<std::unique_ptr<AToken>> &stack) {
+  if (prev_token_ != TokenType::Empty && prev_token_ != TokenType::UnaryOp &&
+      prev_token_ != TokenType::BinaryOp &&
+      prev_token_ != TokenType::LeftBracket) {
+    errmsg_ = std::string{"parser: error near token "} + token->dump();
+    delete token;
+    prev_token_ = TokenType::Wrong;
+    return true;
+  }
+
+  stack.emplace(token);
+  prev_token_ = TokenType::Function;
+
   return false;
 }
 
@@ -199,8 +199,8 @@ bool Parser::ToRpnHandleLeftBracketToken(
     AToken *token, std::stack<std::unique_ptr<AToken>> &stack) {
   if (prev_token_ != TokenType::Empty && prev_token_ != TokenType::UnaryOp &&
       prev_token_ != TokenType::BinaryOp &&
-      prev_token_ != TokenType::LeftBracket &&
-      prev_token_ != TokenType::Function) {
+      prev_token_ != TokenType::Function &&
+      prev_token_ != TokenType::LeftBracket) {
     errmsg_ = std::string{"parser: error near token "} + token->dump();
     delete token;
     prev_token_ = TokenType::Wrong;
@@ -217,7 +217,7 @@ bool Parser::ToRpnHandleRightBracketToken(
     AToken *token, std::stack<std::unique_ptr<AToken>> &stack, Rpn &rpn) {
   delete token;
 
-  if (prev_token_ != TokenType::Number &&
+  if (prev_token_ != TokenType::Number && prev_token_ != TokenType::Var &&
       prev_token_ != TokenType::RightBracket) {
     errmsg_ = std::string{"parser: error near token "} + token->dump();
     prev_token_ = TokenType::Wrong;

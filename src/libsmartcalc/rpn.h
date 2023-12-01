@@ -3,6 +3,7 @@
 
 #include <deque>
 #include <memory>
+#include <stack>
 #include <string>
 
 #include "token.h"
@@ -41,6 +42,15 @@ class Rpn {
 
  private:
   using Iterator = std::deque<std::unique_ptr<AToken>>::iterator;
+
+ private:
+  bool CalculateError(void);
+  bool CalculateHandleUnaryOp(AToken *token,
+                              std::stack<std::unique_ptr<AToken>> &stack);
+  bool CalculateHandleBinaryOp(AToken *token,
+                               std::stack<std::unique_ptr<AToken>> &stack);
+  bool CalculateHandleFunc(AToken *token,
+                           std::stack<std::unique_ptr<AToken>> &stack);
 
  private:
   double result_ = 0.0;

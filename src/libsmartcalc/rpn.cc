@@ -67,41 +67,31 @@ void Rpn::Push(std::unique_ptr<AToken> &token_ptr) {
 }
 
 bool Rpn::Calculate(void) {
+  bool err_status = false;
   std::stack<std::unique_ptr<AToken>> stack;
 
-  while (!rpn_.empty()) {
-    std::unique_ptr<AToken> &token = rpn_.front();
+  while (!rpn_.empty() && !err_status) {
+    std::unique_ptr<AToken> token = std::move(rpn_.front());
+    rpn_.pop_front();
     if (token->type == TokenType::Number) {
       stack.push(std::move(token));
-      rpn_.pop_front();
     } else if (token->type == TokenType::UnaryOp) {
-      std::unique_ptr<AToken> &value = stack.top();
-      AToken *result = static_cast<UnaryOpToken *>(token.get())
-                           ->apply(static_cast<NumberToken *>(value.get()));
-      stack.pop();
-      stack.emplace(result);
-      rpn_.pop_front();
+      err_status = CalculateHandleUnaryOp(token.get(), stack);
     } else if (token->type == TokenType::BinaryOp) {
-      std::unique_ptr<AToken> rhs = std::move(stack.top());
-      stack.pop();
-      std::unique_ptr<AToken> lhs = std::move(stack.top());
-      stack.pop();
-      AToken *result = static_cast<BinaryOpToken *>(token.get())
-                           ->apply(static_cast<NumberToken *>(lhs.get()),
-                                   static_cast<NumberToken *>(rhs.get()));
-      stack.emplace(result);
-      rpn_.pop_front();
+      err_status = CalculateHandleBinaryOp(token.get(), stack);
     } else if (token->type == TokenType::Function) {
-      std::unique_ptr<AToken> &value = stack.top();
-      AToken *result = static_cast<FuncToken *>(token.get())
-                           ->apply(static_cast<NumberToken *>(value.get()));
-      stack.pop();
-      stack.emplace(result);
-      rpn_.pop_front();
+      err_status = CalculateHandleFunc(token.get(), stack);
     }
+  }
+  if (stack.empty()) {
+    return CalculateError();
   }
   result_ = static_cast<NumberToken *>(stack.top().get())->value;
   stack.pop();
+
+  if (!stack.empty()) {
+    return CalculateError();
+  }
 
   return true;
 }
@@ -123,6 +113,72 @@ bool Rpn::Calculate(double var) {
 double Rpn::Result(void) const noexcept { return result_; }
 
 void Rpn::Clear(void) { rpn_.clear(); }
+
+bool Rpn::CalculateError(void) {
+  rpn_.clear();
+  errmsg_ = "incorrect token sequence";
+  return false;
+}
+
+bool Rpn::CalculateHandleUnaryOp(AToken *token,
+                                 std::stack<std::unique_ptr<AToken>> &stack) {
+  UnaryOpToken *unop = static_cast<UnaryOpToken *>(token);
+
+  if (stack.empty()) {
+    CalculateError();
+    return true;
+  }
+
+  std::unique_ptr<AToken> value = std::move(stack.top());
+  stack.pop();
+
+  AToken *result = unop->apply(static_cast<NumberToken *>(value.get()));
+  stack.emplace(result);
+
+  return false;
+}
+
+bool Rpn::CalculateHandleBinaryOp(AToken *token,
+                                  std::stack<std::unique_ptr<AToken>> &stack) {
+  BinaryOpToken *binop = static_cast<BinaryOpToken *>(token);
+
+  if (stack.empty()) {
+    CalculateError();
+    return true;
+  }
+  std::unique_ptr<AToken> rhs = std::move(stack.top());
+  stack.pop();
+
+  if (stack.empty()) {
+    CalculateError();
+    return true;
+  }
+  std::unique_ptr<AToken> lhs = std::move(stack.top());
+  stack.pop();
+
+  AToken *result = binop->apply(static_cast<NumberToken *>(lhs.get()),
+                                static_cast<NumberToken *>(rhs.get()));
+  stack.emplace(result);
+
+  return false;
+}
+
+bool Rpn::CalculateHandleFunc(AToken *token,
+                              std::stack<std::unique_ptr<AToken>> &stack) {
+  FuncToken *func = static_cast<FuncToken *>(token);
+
+  if (stack.empty()) {
+    CalculateError();
+    return true;
+  }
+  std::unique_ptr<AToken> value = std::move(stack.top());
+  stack.pop();
+
+  AToken *result = func->apply(static_cast<NumberToken *>(value.get()));
+  stack.emplace(result);
+
+  return false;
+}
 
 /*
  *  RPN FUNCTION TOKEN

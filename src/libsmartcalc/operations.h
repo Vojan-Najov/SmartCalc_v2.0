@@ -27,7 +27,6 @@ AToken *atan(const NumberToken *token);
 
 }  // namespace funcs
 
-
 namespace binary_ops {
 
 AToken *sum(const NumberToken *lhs, const NumberToken *rhs);

@@ -32,6 +32,7 @@ class Rpn {
   bool Calculate(void);
   bool Calculate(double var);
   double Result(void) const noexcept;
+  void Clear(void);
 
  private:
   using Iterator = std::deque<std::unique_ptr<AToken>>::iterator;

@@ -67,7 +67,7 @@ bool Rpn::Calculate(void) {
       std::unique_ptr<AToken> &value = stack.top();
       AToken *result = static_cast<UnaryOpToken *>(token.get())
                            ->apply(static_cast<NumberToken *>(value.get()));
-	  stack.pop();
+      stack.pop();
       stack.emplace(result);
       rpn_.pop_front();
     } else if (token->type == TokenType::BinaryOp) {
@@ -110,6 +110,8 @@ bool Rpn::Calculate(double var) {
 }
 
 double Rpn::Result(void) const noexcept { return result_; }
+
+void Rpn::Clear(void) { rpn_.clear(); }
 
 /*
  *  RPN FUNCTION TOKEN

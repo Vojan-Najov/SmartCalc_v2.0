@@ -17,16 +17,19 @@ bool Parser::Error(void) const noexcept { return !errmsg_.empty(); }
 std::string Parser::ErrorMessage(void) const { return errmsg_; }
 
 Rpn Parser::ToRpn(const VarMap &vars, const FuncMap &funcs) {
-  Rpn rpn;
+  Rpn rpn{};
   bool err_status = false;
   std::stack<std::unique_ptr<AToken>> stack;
+
+  if (lexer_.Empty()) {
+	err_status = true;
+	errmsg_ = std::string{"parser: empty input"};
+  }
 
   while (!lexer_.Empty() && !err_status) {
     AToken *token = lexer_.NextToken();
 
     if (token->type == TokenType::Name) {
-      (void)token;
-      (void)vars;
       token =
           ToRpnHandleNameToken(static_cast<NameToken *>(token), vars, funcs);
     }

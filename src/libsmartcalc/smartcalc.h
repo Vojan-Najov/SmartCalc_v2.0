@@ -17,16 +17,18 @@ class Smartcalc final {
   Smartcalc(void);
 
  public:
-  double CalculateExpression(const char *expr);
+  bool CalculateExpression(const char *expr);
   bool SetVariable(const char *name, const char *expr);
   bool SetFunction(const char *name, const char *expr);
 
  public:
-	bool Error(void) const;
-	std::string ErrorMessage(void) const;
+  double Result(void) const noexcept;
+  bool Error(void) const;
+  std::string ErrorMessage(void) const;
 
  private:
-	std::string errmsg_;
+  double result_;
+  std::string errmsg_;
   std::map<std::string, double> vars_;
   std::map<std::string, smartcalc::Rpn> funcs_;
 };

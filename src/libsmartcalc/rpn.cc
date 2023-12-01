@@ -65,9 +65,9 @@ bool Rpn::Calculate(void) {
       rpn_.pop_front();
     } else if (token->type == TokenType::UnaryOp) {
       std::unique_ptr<AToken> &value = stack.top();
-      stack.pop();
       AToken *result = static_cast<UnaryOpToken *>(token.get())
                            ->apply(static_cast<NumberToken *>(value.get()));
+	  stack.pop();
       stack.emplace(result);
       rpn_.pop_front();
     } else if (token->type == TokenType::BinaryOp) {
@@ -82,9 +82,9 @@ bool Rpn::Calculate(void) {
       rpn_.pop_front();
     } else if (token->type == TokenType::Function) {
       std::unique_ptr<AToken> &value = stack.top();
-      stack.pop();
       AToken *result = static_cast<FuncToken *>(token.get())
                            ->apply(static_cast<NumberToken *>(value.get()));
+      stack.pop();
       stack.emplace(result);
       rpn_.pop_front();
     }

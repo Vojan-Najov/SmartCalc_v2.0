@@ -1,5 +1,6 @@
 #include "smartcalc.h"
 
+#include <cctype>
 #include <cmath>
 #include <utility>
 
@@ -74,6 +75,18 @@ bool Smartcalc::CalculateExpression(const char *expr) {
 bool Smartcalc::SetVariable(const char *name, const char *expr) {
   errmsg_.clear();
 
+  if (!*name || !std::isalpha(*name)) {
+    errmsg_ = std::string{"'"} + std::string{name} +
+              std::string{"' is invalid name for a variable"};
+    return false;
+  }
+
+  if (funcs_.find(name) != funcs_.end()) {
+    errmsg_ =
+        std::string{"The name '"} + name + "' is used as the function name";
+    return false;
+  }
+
   smartcalc::Parser parser(expr);
   smartcalc::Rpn rpn = parser.ToRpn(vars_, funcs_);
 
@@ -94,6 +107,12 @@ bool Smartcalc::SetVariable(const char *name, const char *expr) {
 
 bool Smartcalc::SetFunction(const char *name, const char *expr) {
   errmsg_.clear();
+
+  if (!*name || !std::isalpha(*name)) {
+    errmsg_ = std::string{"'"} + std::string{name} +
+              std::string{"' is invalid name for a variable"};
+    return false;
+  }
 
   if (vars_.find(name) != vars_.end()) {
     return false;  // handle error

@@ -85,7 +85,8 @@ Rpn Parser::ToRpn(const VarMap &vars, const FuncMap &funcs) {
 }
 
 bool Parser::ToRpnHandleWrongToken(AToken *token) {
-  errmsg_ = std::move(static_cast<WrongToken *>(token)->errmsg);
+  errmsg_ = std::string{"parser: unknown token "} +
+            std::move(static_cast<WrongToken *>(token)->errmsg);
   delete token;
   prev_token_ = TokenType::Wrong;
   return true;
@@ -250,7 +251,8 @@ AToken *Parser::ToRpnHandleNameToken(AToken *token, const VarMap &vars,
                                      const FuncMap &funcs) {
   NameToken *tn = static_cast<NameToken *>(token);
 
-  if (x_is_var_ && (tn->name == "x" || tn->name == "X")) {
+  if (x_is_var_ &&
+      (tn->name == std::string{"x"} || tn->name == std::string{"X"})) {
     delete token;
     return new VarToken{};
   }
@@ -268,7 +270,7 @@ AToken *Parser::ToRpnHandleNameToken(AToken *token, const VarMap &vars,
   }
 
   delete token;
-  return new WrongToken{std::string{"unknown token "} + tn->name};
+  return new WrongToken{tn->name};
 }
 
 }  // namespace smartcalc

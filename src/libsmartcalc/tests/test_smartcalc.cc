@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include <cmath>
 
 #include "smartcalc.h"
@@ -9,9 +10,7 @@ class SmartcalcTest : public testing::Test {
  public:
   Smartcalc sc{};
 
-  void SetUp(void) override {
-
-  }
+  void SetUp(void) override {}
 };
 
 TEST_F(SmartcalcTest, Expression01) {
@@ -226,8 +225,7 @@ TEST_F(SmartcalcTest, Expression24) {
 
   bool ret = sc.CalculateExpression(expr);
   EXPECT_FALSE(ret);
-  EXPECT_EQ(sc.ErrorMessage(),
-            std::string{"parser: unpaired brackets"});
+  EXPECT_EQ(sc.ErrorMessage(), std::string{"parser: unpaired brackets"});
 }
 
 TEST_F(SmartcalcTest, Expression25) {
@@ -235,12 +233,11 @@ TEST_F(SmartcalcTest, Expression25) {
 
   bool ret = sc.CalculateExpression(expr);
   EXPECT_FALSE(ret);
-  EXPECT_EQ(sc.ErrorMessage(),
-            std::string{"parser: unpaired brackets"});
+  EXPECT_EQ(sc.ErrorMessage(), std::string{"parser: unpaired brackets"});
 }
 
 TEST_F(SmartcalcTest, Expression26) {
-  double result = 2. + 3. - 4. * 5. - ((3. + 2.) / 10. -6.);
+  double result = 2. + 3. - 4. * 5. - ((3. + 2.) / 10. - 6.);
   const char *expr = " 2 + 3 - 4 * 5 - ((3 + 2) / 10 -6) ";
 
   bool ret = sc.CalculateExpression(expr);
@@ -249,7 +246,7 @@ TEST_F(SmartcalcTest, Expression26) {
 }
 
 TEST_F(SmartcalcTest, Expression27) {
-  double result = 2. + 3. - 4. * 5. - ((3. + 2.) / 10. -6.);
+  double result = 2. + 3. - 4. * 5. - ((3. + 2.) / 10. - 6.);
   const char *expr = " 2 + 3 - 4 * 5 - ((3 + 2) / 10 -6) ";
 
   bool ret = sc.CalculateExpression(expr);
@@ -258,8 +255,9 @@ TEST_F(SmartcalcTest, Expression27) {
 }
 
 TEST_F(SmartcalcTest, Expression28) {
-  double result = 2. - (std::log10(100. * (std::pow(std::sin(13. - 2.),2.) +
-                                           std::pow(std::cos(9. + 2.), 2.))) * 3.0);
+  double result = 2. - (std::log10(100. * (std::pow(std::sin(13. - 2.), 2.) +
+                                           std::pow(std::cos(9. + 2.), 2.))) *
+                        3.0);
   const char *expr = "2 - (log(100 * (sin(13 - 2)^2 + cos(9 + 2)^2)) * 3)";
 
   bool ret = sc.CalculateExpression(expr);
@@ -267,3 +265,80 @@ TEST_F(SmartcalcTest, Expression28) {
   EXPECT_DOUBLE_EQ(sc.Result(), result);
 }
 
+TEST_F(SmartcalcTest, Expression29) {
+  const char *expr = " 2 + x - 43";
+
+  bool ret = sc.CalculateExpression(expr);
+  EXPECT_FALSE(ret);
+  EXPECT_EQ(sc.ErrorMessage(), "parser: unknown token x");
+}
+
+TEST_F(SmartcalcTest, Variable01) {
+  double result = 2. - 3. + 4. * 8.;
+  const char *expr = "2 - 3 + 4 * 8";
+
+  bool ret = sc.SetVariable("x", expr);
+  EXPECT_TRUE(ret);
+  ret = sc.CalculateExpression("x");
+  EXPECT_TRUE(ret);
+  EXPECT_DOUBLE_EQ(sc.Result(), result);
+  result = std::pow(result, 3.0);
+  ret = sc.CalculateExpression("x ^ 3");
+  EXPECT_DOUBLE_EQ(sc.Result(), result);
+}
+
+TEST_F(SmartcalcTest, Variable02) {
+  double result = 2. - 3. + 4. * 8.;
+  const char *expr = "2 - 3 + 4 * 8";
+
+  bool ret = sc.SetVariable("x", expr);
+  EXPECT_TRUE(ret);
+  ret = sc.CalculateExpression("x");
+  EXPECT_TRUE(ret);
+  EXPECT_DOUBLE_EQ(sc.Result(), result);
+  result = std::pow(result, 3.0);
+  ret = sc.CalculateExpression("x ^ 3");
+  EXPECT_DOUBLE_EQ(sc.Result(), result);
+}
+
+TEST_F(SmartcalcTest, Variable03) {
+  const char *expr = "2 - 3 + 4 * 8";
+
+  bool ret = sc.SetVariable("", expr);
+  EXPECT_FALSE(ret);
+  EXPECT_EQ(sc.ErrorMessage(), "'' is invalid name for a variable");
+
+  ret = sc.SetVariable("123", expr);
+  EXPECT_FALSE(ret);
+  EXPECT_EQ(sc.ErrorMessage(), "'123' is invalid name for a variable");
+
+  ret = sc.SetVariable(" x", expr);
+  EXPECT_FALSE(ret);
+  EXPECT_EQ(sc.ErrorMessage(), "' x' is invalid name for a variable");
+}
+
+TEST_F(SmartcalcTest, Variable04) {
+  const char *expr = "2 - 3 + 4 * 8";
+
+  bool ret = sc.SetVariable("asin", expr);
+  EXPECT_FALSE(ret);
+  EXPECT_EQ(sc.ErrorMessage(), "The name 'asin' is used as the function name");
+}
+
+TEST_F(SmartcalcTest, Variable05) {
+  const char *expr = "2 - 3 + 4 * / 8";
+
+  bool ret = sc.SetVariable("x", expr);
+  EXPECT_FALSE(ret);
+  EXPECT_EQ(sc.ErrorMessage(), "parser: error near token /");
+}
+
+TEST_F(SmartcalcTest, Function01) {
+  const char *expr = "-sin(x)";
+
+  bool ret = sc.SetFunction("func", expr);
+  EXPECT_TRUE(ret);
+
+  // ret = sc.CalculateExpression("func(3)");
+  // EXPECT_TRUE(ret);
+}

@@ -339,6 +339,19 @@ TEST_F(SmartcalcTest, Function01) {
   bool ret = sc.SetFunction("func", expr);
   EXPECT_TRUE(ret);
 
-  // ret = sc.CalculateExpression("func(3)");
-  // EXPECT_TRUE(ret);
+  ret = sc.CalculateExpression("func(3)");
+  EXPECT_TRUE(ret);
+  EXPECT_DOUBLE_EQ(sc.Result(), -std::sin(3.0));
+
+  ret = sc.CalculateExpression("func(19)");
+  EXPECT_TRUE(ret);
+  EXPECT_DOUBLE_EQ(sc.Result(), -std::sin(19.0));
+
+  ret = sc.CalculateExpression("func(19) + 1");
+  EXPECT_TRUE(ret);
+  EXPECT_DOUBLE_EQ(sc.Result(), -std::sin(19.0) + 1.0);
+
+  ret = sc.CalculateExpression("func(19) + 1 - 4 * func(16 - 3)");
+  EXPECT_TRUE(ret);
+  EXPECT_DOUBLE_EQ(sc.Result(), -std::sin(19.0) + 1.0 - 4 * -std::sin(16.0 - 3.0));
 }

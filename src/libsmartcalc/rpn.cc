@@ -81,6 +81,8 @@ bool Rpn::Calculate(void) {
       err_status = CalculateHandleBinaryOp(token.get(), stack);
     } else if (token->type == TokenType::Function) {
       err_status = CalculateHandleFunc(token.get(), stack);
+    } else if (token->type == TokenType::RpnFunction) {
+      err_status = CalculateHandleRpnFunc(token.get(), stack);
     }
   }
   if (stack.empty()) {
@@ -118,6 +120,20 @@ bool Rpn::CalculateError(void) {
   rpn_.clear();
   errmsg_ = "incorrect token sequence";
   return false;
+}
+
+std::string Rpn::Dump(void) const {
+  std::string str{};
+  ConstIterator it = begin();
+  ConstIterator last = end();
+  while (it != last) {
+    str += (*it)->dump();
+    ++it;
+    if (it != last) {
+      str += " ";
+    }
+  }
+  return str;
 }
 
 bool Rpn::CalculateHandleUnaryOp(AToken *token,
@@ -180,12 +196,29 @@ bool Rpn::CalculateHandleFunc(AToken *token,
   return false;
 }
 
+bool Rpn::CalculateHandleRpnFunc(AToken *token,
+                                 std::stack<std::unique_ptr<AToken>> &stack) {
+  RpnFuncToken *func = static_cast<RpnFuncToken *>(token);
+
+  if (stack.empty()) {
+    CalculateError();
+    return true;
+  }
+  std::unique_ptr<AToken> value = std::move(stack.top());
+  stack.pop();
+
+  AToken *result = func->apply(static_cast<NumberToken *>(value.get()));
+  stack.emplace(result);
+
+  return false;
+}
+
 /*
  *  RPN FUNCTION TOKEN
  */
 
 RpnFuncToken::RpnFuncToken(const Rpn &copy)
-    : AToken{TokenType::Function}, rpn_{copy} {}
+    : AToken{TokenType::RpnFunction}, rpn_{copy} {}
 
 RpnFuncToken::~RpnFuncToken(void) {}
 
@@ -197,12 +230,24 @@ std::string RpnFuncToken::dump(void) const {
   str += "|";
   Rpn::ConstIterator it = rpn_.begin();
   Rpn::ConstIterator last = rpn_.end();
-  for (; it != last; ++it) {
+  while (it != last) {
     str += (*it)->dump();
+    ++it;
+    if (it != last) {
+      str += " ";
+    }
   }
   str += "|";
 
   return str;
+}
+
+AToken *RpnFuncToken::apply(const NumberToken *token) {
+  rpn_.Calculate(token->value);
+  if (rpn_.Error()) {
+    return new WrongToken{rpn_.ErrorMessage()};
+  }
+  return new NumberToken{rpn_.Result()};
 }
 
 }  // namespace smartcalc

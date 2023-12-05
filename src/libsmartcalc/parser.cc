@@ -51,7 +51,8 @@ Rpn Parser::ToRpn(const VarMap &vars, const FuncMap &funcs) {
       err_status = ToRpnHandleUnaryOpToken(token, stack);
     } else if (token->type == TokenType::BinaryOp) {
       err_status = ToRpnHandleBinaryOpToken(token, stack, rpn);
-    } else if (token->type == TokenType::Function) {
+    } else if (token->type == TokenType::Function ||
+               token->type == TokenType::RpnFunction) {
       err_status = ToRpnHandleFuncToken(token, stack);
     } else if (token->type == TokenType::LeftBracket) {
       err_status = ToRpnHandleLeftBracketToken(token, stack);
@@ -237,7 +238,8 @@ bool Parser::ToRpnHandleRightBracketToken(
   }
 
   stack.pop();
-  if (!stack.empty() && stack.top()->type == TokenType::Function) {
+  if (!stack.empty() && (stack.top()->type == TokenType::Function ||
+                         stack.top()->type == TokenType::RpnFunction)) {
     rpn.Push(stack.top());
     stack.pop();
   }

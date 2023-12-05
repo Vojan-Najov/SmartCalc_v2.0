@@ -19,6 +19,7 @@ enum class TokenType {
   UnaryOp,
   BinaryOp,
   Function,
+  RpnFunction,
   LeftBracket,
   RightBracket,
   Name,

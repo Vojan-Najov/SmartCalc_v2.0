@@ -38,6 +38,7 @@ class Rpn {
   bool Calculate(void);
   bool Calculate(double var);
   double Result(void) const noexcept;
+  std::string Dump(void) const;
   void Clear(void);
 
  private:
@@ -51,6 +52,8 @@ class Rpn {
                                std::stack<std::unique_ptr<AToken>> &stack);
   bool CalculateHandleFunc(AToken *token,
                            std::stack<std::unique_ptr<AToken>> &stack);
+  bool CalculateHandleRpnFunc(AToken *token,
+                              std::stack<std::unique_ptr<AToken>> &stack);
 
  private:
   double result_ = 0.0;
@@ -69,6 +72,9 @@ class RpnFuncToken : public AToken {
  public:
   RpnFuncToken *clone(void) const override;
   std::string dump(void) const override;
+
+ public:
+  AToken *apply(const NumberToken *token);
 
  private:
   Rpn rpn_;

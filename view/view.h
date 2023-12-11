@@ -15,6 +15,9 @@ public:
     View(QWidget *parent = nullptr);
     ~View();
 
+private slots:
+    void run();
+
 private:
     Ui::View *ui;
 };

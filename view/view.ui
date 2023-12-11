@@ -17,9 +17,6 @@
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QTabWidget" name="tabWidget">
-      <property name="currentIndex">
-       <number>0</number>
-      </property>
       <widget class="QWidget" name="tabCalc">
        <attribute name="title">
         <string>Calc</string>
@@ -36,7 +33,7 @@
              <widget class="QLineEdit" name="lineEdit"/>
             </item>
             <item>
-             <widget class="QPushButton" name="calcButton">
+             <widget class="QPushButton" name="runButton">
               <property name="text">
                <string>Run</string>
               </property>
@@ -48,19 +45,9 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tabPlot">
+      <widget class="QWidget" name="tab_2">
        <attribute name="title">
-        <string>Plot</string>
-       </attribute>
-      </widget>
-      <widget class="QWidget" name="tabCredit">
-       <attribute name="title">
-        <string>Credit</string>
-       </attribute>
-      </widget>
-      <widget class="QWidget" name="tabDebit">
-       <attribute name="title">
-        <string>Debit</string>
+        <string>Tab 2</string>
        </attribute>
       </widget>
      </widget>

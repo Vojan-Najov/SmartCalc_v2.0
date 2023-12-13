@@ -12,6 +12,10 @@ public:
 
 public:
     QString calc(QString expr);
+    const QStringList &getFuncNames(void);
+    std::vector<std::pair<double, double>> getPlot(const QString &funcname,
+                                                   double emin, double emax,
+                                                   double dmin, double dmax);
 
 private:
     Model *model;

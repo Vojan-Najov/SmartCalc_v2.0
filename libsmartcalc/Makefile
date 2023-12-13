@@ -7,7 +7,7 @@ RMDIR = rm -rf
 RM = rm -f
 MKDIR = mkdir -p
 
-CXX_FLAGS = -Wall -Wextra -Werror -std=c++17
+CXX_FLAGS = -Wall -Wextra -Werror -std=c++17 -O3
 TEST_LIBS = -lgtest
 
 INCLUDE_DIR = .
@@ -44,9 +44,11 @@ clean:
 	${RM} ${TARGET}
 	${RM} ${TEST}
 
+re: clean all
+
 format:
 	cp ../../linters/.clang-format .
 	clang-format -i ${SRC} ${INCLUDE}
 	rm .clang-format
 
-.PHONY: ${TEST} all clean format
+.PHONY: ${TEST} all clean format re

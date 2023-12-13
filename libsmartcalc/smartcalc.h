@@ -2,6 +2,8 @@
 #define LIBSMARTCALC_SMARTCALC_H_
 
 #include <map>
+#include <list>
+#include <vector>
 #include <string>
 
 #include "rpn.h"
@@ -25,6 +27,11 @@ class Smartcalc final {
   double Result(void) const noexcept;
   bool Error(void) const;
   std::string ErrorMessage(void) const;
+  std::list<std::string> GetVarNames(void) const;
+  std::list<std::string> GetFuncNames(void) const;
+  std::vector<std::pair<double, double>> GetPlot(const char *func,
+                                                std::pair<double, double> d,
+                                                std::pair<double, double> e);
 
  private:
   double result_;

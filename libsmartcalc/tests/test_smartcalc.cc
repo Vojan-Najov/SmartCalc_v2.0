@@ -355,3 +355,27 @@ TEST_F(SmartcalcTest, Function01) {
   EXPECT_TRUE(ret);
   EXPECT_DOUBLE_EQ(sc.Result(), -std::sin(19.0) + 1.0 - 4 * -std::sin(16.0 - 3.0));
 }
+
+TEST_F(SmartcalcTest, GetFuncNames) {
+	auto lst = sc.GetFuncNames();
+	for (auto it = lst.begin(); it != lst.end(); ++it) {
+		EXPECT_FALSE(it->empty());
+	}
+}
+
+TEST_F(SmartcalcTest, GetVarNames) {
+	auto lst = sc.GetVarNames();
+	for (auto it = lst.begin(); it != lst.end(); ++it) {
+		EXPECT_FALSE(it->empty());
+	}
+}
+
+TEST_F(SmartcalcTest, GetPlot) {
+	auto vec = sc.GetPlot("sin", {-10.0, 10.0}, {-10.0, 10.0});
+	for (auto it = vec.begin(); it != vec.end(); ++it) {
+		//std::cout << it->first << "  " << it->second << "\n";
+		double a = it->first + it->second;
+		(void) a;
+	}
+}
+

@@ -40,6 +40,10 @@ void View::runCalc() {
     QString answer = controller->calc(expr);
     ui->listWidget->addItem(QString(">") + expr);
     ui->listWidget->addItem(answer);
+    if (answer.startsWith("func")) {
+        ui->comboBox->addItem(*++answer.split(' ').begin());
+        //ui->comboBox->addItem(expr);
+    }
 
     QScrollBar *bar = ui->listWidget->verticalScrollBar();
     bar->setMaximum(bar->maximum() + 4 * ui->listWidget->fontInfo().pixelSize());
@@ -81,13 +85,29 @@ void View::plot()
     }
     qDebug() << "have vector";
 
-    QLineSeries *series = new QLineSeries{};
-    for (auto it = plot.cbegin(); it != plot.cend(); ++it) {
-        *series << QPointF(it->first, it->second);
-    }
-    qDebug() << "have series";
     QChart *chart = new QChart{};
     chart->legend()->hide();
+
+    QLineSeries *series = new QLineSeries{};
+    bool flag = false;
+    for (auto it = plot.cbegin(); it != plot.cend(); ++it) {
+        if (std::isnan(it->second)) {
+            qDebug() << "new series";
+            if (flag) {
+                chart->addSeries(series);
+                series = new QLineSeries{};
+                chart->createDefaultAxes();
+                flag = false;
+            }
+            continue;
+        }
+        *series << QPointF(it->first, it->second);
+        flag = true;
+
+    }
+    qDebug() << "have series";
+    // QChart *chart = new QChart{};
+
     chart->addSeries(series);
     chart->createDefaultAxes();
     chart->axes(Qt::Horizontal).first()->setRange(dmin, dmax);

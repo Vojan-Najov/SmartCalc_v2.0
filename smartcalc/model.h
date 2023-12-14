@@ -17,6 +17,7 @@ public:
     std::vector<std::pair<double, double>> getPlot(const QString &funcname,
                                                    double emin, double emax,
                                                    double dmin, double dmax);
+    QString calcCredit(double total, unsigned int term, double rate, bool isDifferentiated);
 
 private:
     s21::Smartcalc sc;

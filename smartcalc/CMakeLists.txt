@@ -24,6 +24,8 @@ set(PROJECT_SOURCES
         model.cpp
         controller.h
         controller.cpp
+        credit_table.h
+        credit_table.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

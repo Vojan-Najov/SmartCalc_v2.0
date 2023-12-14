@@ -22,6 +22,7 @@ private slots:
     void runCalc();
     void chooseItem(QListWidgetItem *item);
     void plot();
+    void credit();
 
 private:
     Controller *controller;

@@ -23,3 +23,8 @@ std::vector<std::pair<double, double>> Controller::getPlot(const QString &funcna
                                                            double dmin, double dmax) {
     return model->getPlot(funcname, emin, emax, dmin, dmax);
 }
+
+QString Controller::calcCredit(double total, unsigned int term, double rate, bool isDifferentiated)
+{
+    return model->calcCredit(total, term, rate, isDifferentiated);
+}

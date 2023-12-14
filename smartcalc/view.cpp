@@ -18,11 +18,17 @@ View::View(Controller *controller, QWidget *parent)
     connect(ui->lineEdit, &QLineEdit::returnPressed, this, &View::runCalc);
     connect(ui->listWidget, &QListWidget::itemClicked, this, &View::chooseItem);
     connect(ui->plotButton, &QPushButton::clicked, this, &View::plot);
+    connect(ui->creditPushButton, &QPushButton::clicked, this, &View::credit);
 
     const QStringList &lst = controller->getFuncNames();
     for (auto it = lst.cbegin(); it != lst.cend(); ++it) {
         ui->comboBox->addItem(*it);
     }
+
+    ui->creditTermComboBox->addItem("month");
+    ui->creditTermComboBox->addItem("year");
+    ui->creditTypeComboBox->addItem("annuity");
+    ui->creditTypeComboBox->addItem("differentiated");
 }
 
 View::~View()
@@ -116,4 +122,32 @@ void View::plot()
     qDebug() << "have chart";
     ui->graphicsView->setChart(chart);
     qDebug() << "end";
+}
+
+void View::credit()
+{
+    QString info{};
+
+    double total = ui->creditTotalSpinBox->value();
+    info = "Total: " + ui->creditTotalSpinBox->textFromValue(total);
+
+    unsigned int term = ui->creditTermSpinBox->value();
+    if (ui->creditTermComboBox->currentText() == "year") {
+        term *= 12;
+    }
+    info += ", term: " + ui->creditTermSpinBox->text() + " " + ui->creditTermComboBox->currentText();
+
+    double rate = ui->creditRateSpinBox->value();
+    info += ", rate: " + ui->creditRateSpinBox->textFromValue(rate);
+
+    bool isDifferentiated = false;
+    if (ui->creditTypeComboBox->currentText() == "differentiated") {
+        isDifferentiated = true;
+    }
+    info += ", type: " + ui->creditTypeComboBox->currentText();
+
+    ui->creditListWidget->addItem(info);
+    ui->creditListWidget->addItem(controller->calcCredit(total, term, rate, isDifferentiated));
+
+    // auto CreditTable = controller->calcCredit(total, term, rate, isDiffertiated)
 }

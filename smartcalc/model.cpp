@@ -88,3 +88,23 @@ std::vector<std::pair<double, double>> Model::getPlot(const QString &funcname,
     vec.push_back({20,2});
     return vec;
 }
+
+QString Model::calcCredit(double total, unsigned int term, double rate, bool isDifferentiated)
+{
+    if (!isDifferentiated) {
+        //double month_rate = rate / 100.0 / 12.0;
+        double month_rate = std::pow((rate+100.0)/100.0, 1.0/12.0) - 1.0;
+        double annuity_factor = month_rate * std::pow((month_rate + 1.0), (double)term)
+                                           / (std::pow((month_rate + 1.0), (double)term) - 1.0);
+
+        double payment_per_month = annuity_factor * total;
+        double total_payment = (double)term * payment_per_month;
+        double overpayment = total_payment - total;
+        QString answer = QString("Monthly payment: ") + QString::number(payment_per_month, 'f', 2);
+        answer += QString(", overpayment on credit: ") + QString::number(overpayment, 'f', 2);
+        answer += QString(", total payment: ") + QString::number(total_payment, 'f', 2);
+        return answer;
+        //monthly payment, overpayment on credit, total payment
+    }
+    return "TODO";
+}

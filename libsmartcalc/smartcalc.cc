@@ -173,16 +173,18 @@ std::vector<std::pair<double, double>> Smartcalc::GetPlot(
 	}
 	std::vector<std::pair<double, double>> vec{};
 	vec.reserve(count);
-	// double y_prev;
+	double y_prev = 0.0;
 	for (double x = d.first; x < d.second; x += step) {
-		(void) rpn;
 		smartcalc::Rpn f{rpn};
 		f.Calculate(x);
 		double y = f.Result();
 		if (f.Error() || std::isnan(y) || std::isinf(y)) {
 			continue;
 		}
-		vec.emplace_back(x, f.Result());
+		if ((std::fabs(y - y_prev) / step) > 100.0 && (y > e.second || y < e.first)) {
+			y = std::nan("");
+		}
+		vec.emplace_back(x, y);
 	}
 	return vec;
 }

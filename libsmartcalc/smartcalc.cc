@@ -50,6 +50,10 @@ Smartcalc::Smartcalc(void) : result_{0.0} {
   rpn.Push(new smartcalc::VarToken{});
   rpn.Push(new smartcalc::FuncToken{&smartcalc::funcs::log});
   funcs_["log"] = std::move(rpn);
+
+  rpn.Push(new smartcalc::VarToken{});
+  rpn.Push(new smartcalc::FuncToken{&smartcalc::funcs::sqrt});
+  funcs_["sqrt"] = std::move(rpn);
 }
 
 bool Smartcalc::CalculateExpression(const char *expr) {
@@ -100,7 +104,8 @@ bool Smartcalc::SetVariable(const char *name, const char *expr) {
     return false;
   }
 
-  vars_[name] = rpn.Result();
+  result_ = rpn.Result();
+  vars_[name] = result_;
 
   return true;
 }

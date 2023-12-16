@@ -4,11 +4,12 @@
 #include <QString>
 
 #include "model.h"
+#include "credit_table.h"
 
 class Controller
 {
 public:
-    Controller(Model *model);
+    Controller(Model &model);
 
 public:
     QString calc(QString expr);
@@ -16,10 +17,12 @@ public:
     std::vector<std::pair<double, double>> getPlot(const QString &funcname,
                                                    double emin, double emax,
                                                    double dmin, double dmax);
-    QString calcCredit(double total, unsigned int term, double rate, bool isDifferentiated);
+
+public:
+    CreditTable CalcCredit(double total, size_t term, double rate, bool isDifferentiated) const;
 
 private:
-    Model *model;
+    Model &model;
 };
 
 #endif // CONTROLLER_H

@@ -5,6 +5,7 @@
 #include <QStringList>
 
 #include "smartcalc.h"
+#include "credit_table.h"
 
 class Model
 {
@@ -18,6 +19,10 @@ public:
                                                    double emin, double emax,
                                                    double dmin, double dmax);
     QString calcCredit(double total, unsigned int term, double rate, bool isDifferentiated);
+
+public:
+    CreditTable CalcAnnuityCredit(double total, size_t term, double rate) const;
+    CreditTable CalcDifferetiatedCredit(double total, size_t term, double rate) const;
 
 private:
     s21::Smartcalc sc;

@@ -5,7 +5,9 @@
 #include <QChart>
 #include <QLineSeries>
 
-View::View(Controller *controller, QWidget *parent)
+#include "credit_table.h"
+
+View::View(Controller &controller, QWidget *parent)
     : QMainWindow(parent)
     , controller(controller)
     , ui(new Ui::View)
@@ -18,9 +20,9 @@ View::View(Controller *controller, QWidget *parent)
     connect(ui->lineEdit, &QLineEdit::returnPressed, this, &View::runCalc);
     connect(ui->listWidget, &QListWidget::itemClicked, this, &View::chooseItem);
     connect(ui->plotButton, &QPushButton::clicked, this, &View::plot);
-    connect(ui->creditPushButton, &QPushButton::clicked, this, &View::credit);
+    connect(ui->creditPushButton, &QPushButton::clicked, this, &View::Credit);
 
-    const QStringList &lst = controller->getFuncNames();
+    const QStringList &lst = controller.getFuncNames();
     for (auto it = lst.cbegin(); it != lst.cend(); ++it) {
         ui->comboBox->addItem(*it);
     }
@@ -43,7 +45,7 @@ void View::runCalc() {
         return;
     }
 
-    QString answer = controller->calc(expr);
+    QString answer = controller.calc(expr);
     ui->listWidget->addItem(QString(">") + expr);
     ui->listWidget->addItem(answer);
     if (answer.startsWith("func")) {
@@ -84,7 +86,7 @@ void View::plot()
     }
 
     qDebug() << "start";
-    std::vector<std::pair<double, double>> plot = controller->getPlot(funcname, emin, emax, dmin, dmax);
+    std::vector<std::pair<double, double>> plot = controller.getPlot(funcname, emin, emax, dmin, dmax);
     if (plot.empty()) {
         ui->statusbar->showMessage("Plot error");
         return;
@@ -124,30 +126,31 @@ void View::plot()
     qDebug() << "end";
 }
 
-void View::credit()
-{
-    QString info{};
-
+void View::Credit(void) {
     double total = ui->creditTotalSpinBox->value();
-    info = "Total: " + ui->creditTotalSpinBox->textFromValue(total);
-
-    unsigned int term = ui->creditTermSpinBox->value();
+    size_t term = ui->creditTermSpinBox->value();
     if (ui->creditTermComboBox->currentText() == "year") {
         term *= 12;
     }
-    info += ", term: " + ui->creditTermSpinBox->text() + " " + ui->creditTermComboBox->currentText();
-
     double rate = ui->creditRateSpinBox->value();
-    info += ", rate: " + ui->creditRateSpinBox->textFromValue(rate);
-
     bool isDifferentiated = false;
     if (ui->creditTypeComboBox->currentText() == "differentiated") {
         isDifferentiated = true;
     }
-    info += ", type: " + ui->creditTypeComboBox->currentText();
 
-    ui->creditListWidget->addItem(info);
-    ui->creditListWidget->addItem(controller->calcCredit(total, term, rate, isDifferentiated));
+    QTableWidget *table = ui->creditTableWidget;
+    table->clearContents();
+    table->setRowCount(term + 1);
 
-    // auto CreditTable = controller->calcCredit(total, term, rate, isDiffertiated)
+    CreditTable tab = controller.CalcCredit(total, term, rate, isDifferentiated);
+
+    for (int i = 0; i < term; ++i) {
+        table->setItem(i, 0, new QTableWidgetItem(tab.GetStringMonthlyPayment(i)));
+        table->setItem(i, 1, new QTableWidgetItem(tab.GetStringPrincipalPayment(i)));
+        table->setItem(i, 2, new QTableWidgetItem(tab.GetStringInterestPayment(i)));
+        table->setItem(i, 3, new QTableWidgetItem(tab.GetStringBalanceOwed(i)));
+    }
+    table->setItem(term, 0, new QTableWidgetItem(tab.GetStringTotalPayment()));
+    table->setItem(term, 1, new QTableWidgetItem(tab.GetStringTotalPrincipalPayment()));
+    table->setItem(term, 2, new QTableWidgetItem(tab.GetStringTotalInterestPayment()));
 }

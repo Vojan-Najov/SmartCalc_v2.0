@@ -7,10 +7,12 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+
     Model model{};
-    Controller controller{&model};
-    View view{&controller};
+    Controller controller{model};
+    View view{controller};
 
     view.show();
+
     return app.exec();
 }

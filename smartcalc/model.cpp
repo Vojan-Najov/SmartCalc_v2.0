@@ -89,22 +89,49 @@ std::vector<std::pair<double, double>> Model::getPlot(const QString &funcname,
     return vec;
 }
 
-QString Model::calcCredit(double total, unsigned int term, double rate, bool isDifferentiated)
-{
-    if (!isDifferentiated) {
-        //double month_rate = rate / 100.0 / 12.0;
-        double month_rate = std::pow((rate+100.0)/100.0, 1.0/12.0) - 1.0;
-        double annuity_factor = month_rate * std::pow((month_rate + 1.0), (double)term)
-                                           / (std::pow((month_rate + 1.0), (double)term) - 1.0);
+CreditTable Model::CalcAnnuityCredit(double total, size_t term, double rate) const {
+    CreditTable table(term);
 
-        double payment_per_month = annuity_factor * total;
-        double total_payment = (double)term * payment_per_month;
-        double overpayment = total_payment - total;
-        QString answer = QString("Monthly payment: ") + QString::number(payment_per_month, 'f', 2);
-        answer += QString(", overpayment on credit: ") + QString::number(overpayment, 'f', 2);
-        answer += QString(", total payment: ") + QString::number(total_payment, 'f', 2);
-        return answer;
-        //monthly payment, overpayment on credit, total payment
+    double month_rate = rate / 100.0 / 12.0;
+    double annuity_factor = month_rate * std::pow((month_rate + 1.0), (double)term)
+                                       / (std::pow((month_rate + 1.0), (double)term) - 1.0);
+    double monthly_payment = annuity_factor * total;
+
+    double saldo = total;
+    for (size_t i = 0; i < term; ++i) {
+        double interest_payment = saldo * month_rate;
+        double principal_payment = monthly_payment - interest_payment;
+        saldo = saldo * (1.0 + month_rate) - monthly_payment;
+        if (saldo < 0.0) saldo = 0.0;
+
+        table.SetMonthlyPayment(i, monthly_payment);
+        table.SetPrincipalPayment(i, principal_payment);
+        table.SetInterestPayment(i, interest_payment);
+        table.SetBalanceOwed(i, saldo);
     }
-    return "TODO";
+
+    return table;
 }
+
+CreditTable Model::CalcDifferetiatedCredit(double total, size_t term, double rate) const {
+    CreditTable table(term);
+
+    double month_rate = rate / 100.0 / 12.0;
+    double saldo = total;
+    double principal_payment = total / (double)term;
+
+    for (size_t i = 0; i < term; ++i) {
+        double interest_payment = saldo * month_rate;
+        double monthly_payment = principal_payment + interest_payment;
+        saldo -= principal_payment;
+        if (saldo < 0.0) saldo = 0.0;
+
+        table.SetMonthlyPayment(i, monthly_payment);
+        table.SetPrincipalPayment(i, principal_payment);
+        table.SetInterestPayment(i, interest_payment);
+        table.SetBalanceOwed(i, saldo);
+    }
+
+    return table;
+}
+

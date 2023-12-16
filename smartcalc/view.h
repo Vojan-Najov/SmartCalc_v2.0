@@ -15,17 +15,17 @@ class View : public QMainWindow
     Q_OBJECT
 
 public:
-    View(Controller *controller, QWidget *parent = nullptr);
+    View(Controller &controller, QWidget *parent = nullptr);
     ~View();
 
 private slots:
     void runCalc();
     void chooseItem(QListWidgetItem *item);
     void plot();
-    void credit();
+    void Credit(void);
 
 private:
-    Controller *controller;
+    Controller &controller;
     Ui::View *ui;
 };
 #endif // VIEW_H

@@ -13,7 +13,8 @@ public:
     Model();
 
 public:
-    QString calculateExpression(QString expr);
+    QString СalculateExpression(QString expr);
+
     const QStringList &getFuncNames();
     std::vector<std::pair<double, double>> getPlot(const QString &funcname,
                                                    double emin, double emax,

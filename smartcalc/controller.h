@@ -12,13 +12,14 @@ public:
     Controller(Model &model);
 
 public:
-    QString calc(QString expr);
-    const QStringList &getFuncNames(void);
+    QString CalculateExpression(QString expr);
+
     std::vector<std::pair<double, double>> getPlot(const QString &funcname,
                                                    double emin, double emax,
                                                    double dmin, double dmax);
 
 public:
+    const QStringList &GetFuncNames(void) const;
     CreditTable CalcCredit(double total, size_t term, double rate, bool isDifferentiated) const;
 
 private:

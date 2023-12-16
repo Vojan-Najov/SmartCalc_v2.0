@@ -22,7 +22,7 @@ View::View(Controller &controller, QWidget *parent)
     connect(ui->plotButton, &QPushButton::clicked, this, &View::plot);
     connect(ui->creditPushButton, &QPushButton::clicked, this, &View::Credit);
 
-    const QStringList &lst = controller.getFuncNames();
+    const QStringList &lst = controller.GetFuncNames();
     for (auto it = lst.cbegin(); it != lst.cend(); ++it) {
         ui->comboBox->addItem(*it);
     }
@@ -45,12 +45,13 @@ void View::runCalc() {
         return;
     }
 
-    QString answer = controller.calc(expr);
+    QString answer = controller.CalculateExpression(expr);
     ui->listWidget->addItem(QString(">") + expr);
     ui->listWidget->addItem(answer);
     if (answer.startsWith("func")) {
+        QStringList lst = answer.split(' ');
+        qDebug() << lst;
         ui->comboBox->addItem(*++answer.split(' ').begin());
-        //ui->comboBox->addItem(expr);
     }
 
     QScrollBar *bar = ui->listWidget->verticalScrollBar();
@@ -58,7 +59,6 @@ void View::runCalc() {
     bar->setValue(bar->maximum());
 
     ui->lineEdit->clear();
-
 }
 
 void View::chooseItem(QListWidgetItem *item)

@@ -7,13 +7,12 @@ Controller::Controller(Model &model)
 
 }
 
-QString Controller::calc(QString expr)
+QString Controller::CalculateExpression(QString expr)
 {
-    return model.calculateExpression(std::move(expr));
+    return model.СalculateExpression(std::move(expr));
 }
 
-const QStringList &Controller::getFuncNames(void)
-{
+const QStringList &Controller::GetFuncNames(void) const {
     return model.getFuncNames();
 }
 

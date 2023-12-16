@@ -131,6 +131,8 @@ AToken *Lexer::MultiCharacterLexem(void) {
     token = new FuncToken{&funcs::acos};
   } else if (n == 4 && std::strncmp(expr_, "atan", 4) == 0) {
     token = new FuncToken{&funcs::atan};
+  } else if (n == 4 && std::strncmp(expr_, "sqrt", 4) == 0) {
+	token = new FuncToken{&funcs::sqrt};
   } else {
     token = new NameToken{expr_, n};
   }

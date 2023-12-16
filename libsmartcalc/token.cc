@@ -167,6 +167,8 @@ std::string FuncToken::dump(void) const {
     s = "ln";
   } else if (apply == &funcs::log) {
     s = "log";
+  } else if (apply == &funcs::sqrt) {
+    s = "sqrt";
   }
 
   return std::string(s);

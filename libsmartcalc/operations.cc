@@ -62,6 +62,11 @@ AToken *atan(const NumberToken *token) {
   return new NumberToken{std::atan(num)};
 }
 
+AToken *sqrt(const NumberToken *token) {
+  double num = token->value;
+  return new NumberToken{std::sqrt(num)};
+}
+
 }  // namespace funcs
 
 namespace binary_ops {

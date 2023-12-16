@@ -24,6 +24,7 @@ AToken *tan(const NumberToken *token);
 AToken *asin(const NumberToken *token);
 AToken *acos(const NumberToken *token);
 AToken *atan(const NumberToken *token);
+AToken *sqrt(const NumberToken *token);
 
 }  // namespace funcs
 

@@ -221,7 +221,7 @@ bool Parser::ToRpnHandleRightBracketToken(
 
   if (prev_token_ != TokenType::Number && prev_token_ != TokenType::Var &&
       prev_token_ != TokenType::RightBracket) {
-    errmsg_ = std::string{"parser: error near token "} + token->dump();
+    errmsg_ = std::string{"parser: error near token )"};
     prev_token_ = TokenType::Wrong;
     return true;
   }

@@ -15,14 +15,20 @@ class View : public QMainWindow
     Q_OBJECT
 
 public:
+    using StringList = Controller::StringList;
+    using Plot = Controller::Plot;
+public:
     View(Controller &controller, QWidget *parent = nullptr);
     ~View();
 
 private slots:
-    void runCalc();
-    void chooseItem(QListWidgetItem *item);
-    void plot();
+    void Calc(void);
+    void CalcChooseItem(QListWidgetItem *item);
     void Credit(void);
+
+
+    void plot();
+
 
 private:
     Controller &controller;

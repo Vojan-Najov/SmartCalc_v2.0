@@ -12,19 +12,18 @@ View::View(Controller &controller, QWidget *parent)
     , controller(controller)
     , ui(new Ui::View)
 {
-    QLocale::setDefault(QLocale::c());
     ui->setupUi(this);
     setWindowTitle("Smartcalc-v2.0");
 
-    connect(ui->runButton, &QPushButton::clicked, this, &View::runCalc);
-    connect(ui->lineEdit, &QLineEdit::returnPressed, this, &View::runCalc);
-    connect(ui->listWidget, &QListWidget::itemClicked, this, &View::chooseItem);
-    connect(ui->plotButton, &QPushButton::clicked, this, &View::plot);
+    connect(ui->calcPushButton, &QPushButton::clicked, this, &View::Calc);
+    connect(ui->calcLineEdit, &QLineEdit::returnPressed, this, &View::Calc);
     connect(ui->creditPushButton, &QPushButton::clicked, this, &View::Credit);
+    connect(ui->plotButton, &QPushButton::clicked, this, &View::plot);
+    connect(ui->calcListWidget, &QListWidget::itemClicked, this, &View::CalcChooseItem);
 
-    const QStringList &lst = controller.GetFuncNames();
+    StringList lst = controller.GetFuncNames();
     for (auto it = lst.cbegin(); it != lst.cend(); ++it) {
-        ui->comboBox->addItem(*it);
+        ui->plotComboBox->addItem(it->c_str());
     }
 
     ui->creditTermComboBox->addItem("month");
@@ -38,92 +37,83 @@ View::~View()
     delete ui;
 }
 
-void View::runCalc() {
-    QString expr = ui->lineEdit->text().trimmed();
-    ui->lineEdit->clear();
+void View::Calc() {
+    QString expr = ui->calcLineEdit->text().trimmed();
+    ui->calcLineEdit->clear();
     if (expr.isEmpty()) {
         return;
     }
 
     QString answer = controller.CalculateExpression(expr);
-    ui->listWidget->addItem(QString(">") + expr);
-    ui->listWidget->addItem(answer);
-    if (answer.startsWith("func")) {
-        QStringList lst = answer.split(' ');
-        qDebug() << lst;
-        ui->comboBox->addItem(*++answer.split(' ').begin());
-    }
+    ui->calcListWidget->addItem(QString(">") + expr);
+    ui->calcListWidget->addItem(answer);
 
-    QScrollBar *bar = ui->listWidget->verticalScrollBar();
-    bar->setMaximum(bar->maximum() + 4 * ui->listWidget->fontInfo().pixelSize());
+    QScrollBar *bar = ui->calcListWidget->verticalScrollBar();
+    bar->setMaximum(bar->maximum() + 4 * ui->calcListWidget->fontInfo().pixelSize());
     bar->setValue(bar->maximum());
 
-    ui->lineEdit->clear();
+    if (answer.startsWith("func")) {
+        ui->plotComboBox->clear();
+        StringList lst = controller.GetFuncNames();
+        for (auto it = lst.cbegin(); it != lst.cend(); ++it) {
+            ui->plotComboBox->addItem(it->c_str());
+        }
+    }
 }
 
-void View::chooseItem(QListWidgetItem *item)
+void View::CalcChooseItem(QListWidgetItem *item)
 {
     QString str = item->text();
     if (str.front() == '>') {
         str.remove(0, 1);
     }
-    ui->lineEdit->setText(str);
+    ui->calcLineEdit->setText(str);
 }
 
 void View::plot()
 {
     ui->statusbar->clearMessage();
 
-    QString funcname = ui->comboBox->currentText();
-    double emin = ui->emin->value();
-    double emax = ui->emax->value();
+    QString funcname = ui->plotComboBox->currentText();
     double dmin = ui->dmin->value();
     double dmax = ui->dmax->value();
+    double emin = ui->emin->value();
+    double emax = ui->emax->value();
 
     if (!(dmin < dmax && emin < emax)) {
         ui->statusbar->showMessage("Incorrect rages");
         return;
     }
 
-    qDebug() << "start";
-    std::vector<std::pair<double, double>> plot = controller.getPlot(funcname, emin, emax, dmin, dmax);
-    if (plot.empty()) {
-        ui->statusbar->showMessage("Plot error");
-        return;
-    }
-    qDebug() << "have vector";
-
+    Plot plot = controller.GetPlot(funcname, dmin, dmax, emin, emax);
     QChart *chart = new QChart{};
     chart->legend()->hide();
 
     QLineSeries *series = new QLineSeries{};
-    bool flag = false;
-    for (auto it = plot.cbegin(); it != plot.cend(); ++it) {
-        if (std::isnan(it->second)) {
-            qDebug() << "new series";
-            if (flag) {
+    bool series_filled = false;
+    for (Plot::iterator it = plot.begin(), last = plot.end(); it != last; ++it) {
+        double x = it->first, y = it->second;
+        if (std::isnan(y)) {
+            if (series_filled) {
                 chart->addSeries(series);
-                series = new QLineSeries{};
                 chart->createDefaultAxes();
-                flag = false;
+                series = new QLineSeries{};
+                series_filled = false;
             }
-            continue;
+        } else {
+            *series << QPointF(x, y);
+            series_filled = true;
         }
-        *series << QPointF(it->first, it->second);
-        flag = true;
-
     }
-    qDebug() << "have series";
-    // QChart *chart = new QChart{};
+    if (series_filled) {
+        chart->addSeries(series);
+        chart->createDefaultAxes();
+    }
 
-    chart->addSeries(series);
-    chart->createDefaultAxes();
     chart->axes(Qt::Horizontal).first()->setRange(dmin, dmax);
     chart->axes(Qt::Vertical).first()->setRange(emin, emax);
     chart->setTitle(funcname + "(x)");
-    qDebug() << "have chart";
     ui->graphicsView->setChart(chart);
-    qDebug() << "end";
 }
 
 void View::Credit(void) {

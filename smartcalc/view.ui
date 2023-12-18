@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tabCalc">
        <attribute name="title">
@@ -28,15 +28,15 @@
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <widget class="QListWidget" name="listWidget"/>
+           <widget class="QListWidget" name="calcListWidget"/>
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout">
             <item>
-             <widget class="QLineEdit" name="lineEdit"/>
+             <widget class="QLineEdit" name="calcLineEdit"/>
             </item>
             <item>
-             <widget class="QPushButton" name="runButton">
+             <widget class="QPushButton" name="calcPushButton">
               <property name="text">
                <string>Run</string>
               </property>
@@ -61,7 +61,7 @@
              <enum>QLayout::SetDefaultConstraint</enum>
             </property>
             <item>
-             <widget class="QComboBox" name="comboBox"/>
+             <widget class="QComboBox" name="plotComboBox"/>
             </item>
             <item>
              <widget class="QPushButton" name="plotButton">

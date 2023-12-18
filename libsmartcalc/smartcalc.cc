@@ -86,8 +86,7 @@ bool Smartcalc::SetVariable(const char *name, const char *expr) {
   }
 
   if (funcs_.find(name) != funcs_.end()) {
-    errmsg_ =
-        std::string{"The name '"} + name + "' is used as the function name";
+    errmsg_ = std::string{"The name '"} + name + "' is defined as the function";
     return false;
   }
 
@@ -115,12 +114,14 @@ bool Smartcalc::SetFunction(const char *name, const char *expr) {
 
   if (!*name || !std::isalpha(*name)) {
     errmsg_ = std::string{"'"} + std::string{name} +
-              std::string{"' is invalid name for a variable"};
+              std::string{"' is invalid name for a function"};
     return false;
   }
 
   if (vars_.find(name) != vars_.end()) {
-    return false;  // handle error
+    errmsg_ = std::string{"The name '"} + std::string{name} +
+              std::string{"' is defined as the variable"};
+    return false;
   }
 
   smartcalc::Parser parser(expr, true);
@@ -145,54 +146,52 @@ bool Smartcalc::Error(void) const { return !errmsg_.empty(); }
 std::string Smartcalc::ErrorMessage(void) const { return errmsg_; }
 
 std::list<std::string> Smartcalc::GetFuncNames(void) const {
-	std::list<std::string> lst;
-	std::map<std::string, smartcalc::Rpn>::const_iterator it = funcs_.cbegin();
-	std::map<std::string, smartcalc::Rpn>::const_iterator last = funcs_.cend();
-	for (; it != last; ++it) {
-		lst.push_back(it->first);
-	}
-	return lst;
+  std::list<std::string> lst;
+  std::map<std::string, smartcalc::Rpn>::const_iterator it = funcs_.cbegin();
+  std::map<std::string, smartcalc::Rpn>::const_iterator last = funcs_.cend();
+  for (; it != last; ++it) {
+    lst.push_back(it->first);
+  }
+  return lst;
 }
 
 std::list<std::string> Smartcalc::GetVarNames(void) const {
-	std::list<std::string> lst;
-	std::map<std::string, double>::const_iterator it = vars_.cbegin();
-	std::map<std::string, double>::const_iterator last = vars_.cend();
-	for (; it != last; ++it) {
-		lst.push_back(it->first);
-	}
-	return lst;
+  std::list<std::string> lst;
+  std::map<std::string, double>::const_iterator it = vars_.cbegin();
+  std::map<std::string, double>::const_iterator last = vars_.cend();
+  for (; it != last; ++it) {
+    lst.push_back(it->first);
+  }
+  return lst;
 }
 
 std::vector<std::pair<double, double>> Smartcalc::GetPlot(
-		const char *func,
-        std::pair<double, double> d,
-        std::pair<double, double> e)
-{
-	(void) e;
-	const smartcalc::Rpn &rpn = funcs_[func];
-	size_t count = 20000;//20e4;
-	double step = (d.second + d.first) / 2.0 / (double)count;
-	if (step < 1.0e-6) {
-		step = 1.0e-5;
-	}
-	std::vector<std::pair<double, double>> vec{};
-	vec.reserve(count);
-	double y_prev = 0.0;
-	for (double x = d.first; x < d.second; x += step) {
-		smartcalc::Rpn f{rpn};
-		f.Calculate(x);
-		double y = f.Result();
-		if (f.Error() || std::isnan(y) || std::isinf(y)) {
-			continue;
-		}
-		if ((std::fabs(y - y_prev) / step) > 100.0 && (y > e.second || y < e.first)) {
-			y = std::nan("");
-		}
-		vec.emplace_back(x, y);
-	}
-	return vec;
+    const char *func, std::pair<double, double> d,
+    std::pair<double, double> e) {
+  (void)e;
+  const smartcalc::Rpn &rpn = funcs_[func];
+  size_t count = 20000;  // 20e4;
+  double step = (d.second + d.first) / 2.0 / (double)count;
+  if (step < 1.0e-6) {
+    step = 1.0e-5;
+  }
+  std::vector<std::pair<double, double>> vec{};
+  vec.reserve(count);
+  double y_prev = 0.0;
+  for (double x = d.first; x < d.second; x += step) {
+    smartcalc::Rpn f{rpn};
+    f.Calculate(x);
+    double y = f.Result();
+    if (f.Error() || std::isnan(y) || std::isinf(y)) {
+      continue;
+    }
+    if ((std::fabs(y - y_prev) / step) > 100.0 &&
+        (y > e.second || y < e.first)) {
+      y = std::nan("");
+    }
+    vec.emplace_back(x, y);
+  }
+  return vec;
 }
-
 
 }  // namespace s21

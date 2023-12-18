@@ -165,33 +165,36 @@ std::list<std::string> Smartcalc::GetVarNames(void) const {
   return lst;
 }
 
-std::vector<std::pair<double, double>> Smartcalc::GetPlot(
-    const char *func, std::pair<double, double> d,
-    std::pair<double, double> e) {
+Smartcalc::Plot Smartcalc::GetPlot(const char *func,
+                                   std::pair<double, double> d,
+                                   std::pair<double, double> e) {
   (void)e;
+  if (funcs_.find(func) != funcs_.end()) {
+    errmsg_ = std::string{"Function '"} + std::string{func} +
+              std::string{"' is not defined"};
+  }
+
   const smartcalc::Rpn &rpn = funcs_[func];
-  size_t count = 20000;  // 20e4;
+  size_t count = 5120;
   double step = (d.second + d.first) / 2.0 / (double)count;
   if (step < 1.0e-6) {
     step = 1.0e-5;
   }
-  std::vector<std::pair<double, double>> vec{};
-  vec.reserve(count);
-  double y_prev = 0.0;
-  for (double x = d.first; x < d.second; x += step) {
+
+  Plot plot{};
+  plot.reserve(count);
+  for (double x = d.first, y_prev = 0.0; x < d.second; x += step) {
     smartcalc::Rpn f{rpn};
     f.Calculate(x);
     double y = f.Result();
-    if (f.Error() || std::isnan(y) || std::isinf(y)) {
-      continue;
-    }
-    if ((std::fabs(y - y_prev) / step) > 100.0 &&
-        (y > e.second || y < e.first)) {
+    if (f.Error() || std::isinf(y) || (std::fabs(y - y_prev) / step) > 1.e10) {
       y = std::nan("");
     }
-    vec.emplace_back(x, y);
+
+    plot.emplace_back(x, y);
   }
-  return vec;
+
+  return plot;
 }
 
 }  // namespace s21

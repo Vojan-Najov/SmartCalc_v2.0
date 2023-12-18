@@ -16,12 +16,17 @@ class Smartcalc final {
   static const double E;
 
  public:
+  using Plot = std::vector<std::pair<double, double>>;
+
+ public:
   Smartcalc(void);
 
  public:
   bool CalculateExpression(const char *expr);
   bool SetVariable(const char *name, const char *expr);
   bool SetFunction(const char *name, const char *expr);
+  Plot GetPlot(const char *func, std::pair<double, double> d,
+               std::pair<double, double> e);
 
  public:
   double Result(void) const noexcept;
@@ -29,9 +34,9 @@ class Smartcalc final {
   std::string ErrorMessage(void) const;
   std::list<std::string> GetVarNames(void) const;
   std::list<std::string> GetFuncNames(void) const;
-  std::vector<std::pair<double, double>> GetPlot(const char *func,
-                                                 std::pair<double, double> d,
-                                                 std::pair<double, double> e);
+  // std::vector<std::pair<double, double>> GetPlot(const char *func,
+  //                                              std::pair<double, double> d,
+  //                                            std::pair<double, double> e);
 
  private:
   double result_;

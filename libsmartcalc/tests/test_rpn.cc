@@ -19,10 +19,22 @@ using TokenType = s21::smartcalc::TokenType;
 
 class RpnTest : public testing::Test {};
 
+TEST_F(RpnTest, MoveConstructor) {
+  Rpn rpn1;
+  rpn1.Push(new VarToken{});
+  rpn1.Push(new FuncToken{&s21::smartcalc::funcs::sin});
+
+  Rpn rpn2 = std::move(rpn1);
+
+  rpn2.Calculate(1);
+  double res = rpn2.Result();
+
+  EXPECT_EQ(res, std::sin(1.0));
+}
+
 TEST_F(RpnTest, CopyConstructor) {
   Rpn rpn1;
   rpn1.Push(new VarToken{});
-  // rpn1.Push(new NumberToken{5.0});
   rpn1.Push(new FuncToken{&s21::smartcalc::funcs::sin});
 
   Rpn rpn2 = rpn1;
@@ -34,6 +46,41 @@ TEST_F(RpnTest, CopyConstructor) {
   double res2 = rpn2.Result();
 
   EXPECT_EQ(res1, res2);
+}
+
+TEST_F(RpnTest, OperatorAssign) {
+  Rpn rpn1;
+  rpn1.Push(new VarToken{});
+  rpn1.Push(new FuncToken{&s21::smartcalc::funcs::sin});
+
+  Rpn rpn2 = rpn1;
+  rpn2 = rpn1;
+
+  rpn1.Calculate(1);
+  double res1 = rpn1.Result();
+
+  rpn2.Calculate(1);
+  double res2 = rpn2.Result();
+
+  EXPECT_EQ(res1, res2);
+}
+
+TEST_F(RpnTest, Dump) {
+  Rpn rpn;
+  rpn.Push(new VarToken{});
+  rpn.Push(new FuncToken{&s21::smartcalc::funcs::sin});
+
+  std::string dump = rpn.Dump();
+  EXPECT_EQ(dump, "x sin");
+
+  s21::smartcalc::RpnFuncToken tok{rpn};
+  dump = tok.dump();
+  EXPECT_EQ(dump, "|x sin|");
+
+  s21::smartcalc::RpnFuncToken *clone = tok.clone();
+  dump = clone->dump();
+  delete clone;
+  EXPECT_EQ(dump, "|x sin|");
 }
 
 TEST_F(RpnTest, Expression00) {

@@ -108,3 +108,16 @@ TEST_F(ParserTest, Expression05) {
 
   check(rpn, arr);
 }
+
+TEST_F(ParserTest, Expression06) {
+  const char *str = "1 + 2";
+  std::string arr[] = {std::to_string(4.0), std::to_string(8.0), "+"};
+
+  Parser parser(str);
+  parser.SetExpr("4 + 8");
+  parser.XisVar(true);
+  Rpn rpn = parser.ToRpn(vars, funcs);
+  EXPECT_FALSE(parser.Error());
+
+  check(rpn, arr);
+}

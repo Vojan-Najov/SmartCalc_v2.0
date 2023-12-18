@@ -65,8 +65,8 @@ clean:
 re: clean all
 
 format:
-	cp ../../linters/.clang-format .
-	clang-format -i ${SRC} ${INCLUDE}
+	cp ../linters/.clang-format .
+	clang-format -i ${SRC} ${INCLUDE} ${TEST_SRC}
 	rm .clang-format
 
 .PHONY: ${TEST} ${REPORT} all clean format re

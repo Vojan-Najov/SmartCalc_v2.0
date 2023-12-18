@@ -273,6 +273,71 @@ TEST_F(SmartcalcTest, Expression29) {
   EXPECT_EQ(sc.ErrorMessage(), "parser: unknown token x");
 }
 
+TEST_F(SmartcalcTest, Expression30) {
+  double result = std::sqrt(1024.5) - 0.5;
+  const char *expr = " sqrt(1024.5) - 0.5";
+
+  bool ret = sc.CalculateExpression(expr);
+  EXPECT_TRUE(ret);
+  EXPECT_DOUBLE_EQ(sc.Result(), result);
+}
+
+TEST_F(SmartcalcTest, Expression31) {
+  const char *expr = " 2 4 ";
+
+  bool ret = sc.CalculateExpression(expr);
+  EXPECT_FALSE(ret);
+  EXPECT_EQ(sc.ErrorMessage(), "parser: error near token 4.000000");
+}
+
+TEST_F(SmartcalcTest, Expression32) {
+  const char *expr = " ) 4 ";
+
+  bool ret = sc.CalculateExpression(expr);
+  EXPECT_FALSE(ret);
+  EXPECT_EQ(sc.ErrorMessage(), "parser: error near token )");
+}
+
+TEST_F(SmartcalcTest, Expression33) {
+  const char *expr = " sin 4 ";
+
+  bool ret = sc.CalculateExpression(expr);
+  EXPECT_FALSE(ret);
+  EXPECT_EQ(sc.ErrorMessage(), "parser: error near token 4.000000");
+}
+
+TEST_F(SmartcalcTest, Expression34) {
+  const char *expr = " 2 x ";
+
+  bool ret = sc.SetFunction("y", expr);
+  EXPECT_FALSE(ret);
+  EXPECT_EQ(sc.ErrorMessage(), "parser: error near token x");
+}
+
+TEST_F(SmartcalcTest, Expression35) {
+  const char *expr = " -+1 ";
+
+  bool ret = sc.CalculateExpression(expr);
+  EXPECT_FALSE(ret);
+  EXPECT_EQ(sc.ErrorMessage(), "parser: error near token +");
+}
+
+TEST_F(SmartcalcTest, Expression36) {
+  const char *expr = " 1 sin(3) ";
+
+  bool ret = sc.CalculateExpression(expr);
+  EXPECT_FALSE(ret);
+  EXPECT_EQ(sc.ErrorMessage(), "parser: error near token sin");
+}
+
+TEST_F(SmartcalcTest, Expression37) {
+  const char *expr = " 1 (1 -4) ";
+
+  bool ret = sc.CalculateExpression(expr);
+  EXPECT_FALSE(ret);
+  EXPECT_EQ(sc.ErrorMessage(), "parser: error near token (");
+}
+
 TEST_F(SmartcalcTest, Variable01) {
   double result = 2. - 3. + 4. * 8.;
   const char *expr = "2 - 3 + 4 * 8";
@@ -322,7 +387,7 @@ TEST_F(SmartcalcTest, Variable04) {
 
   bool ret = sc.SetVariable("asin", expr);
   EXPECT_FALSE(ret);
-  EXPECT_EQ(sc.ErrorMessage(), "The name 'asin' is used as the function name");
+  EXPECT_EQ(sc.ErrorMessage(), "The name 'asin' is defined as the function");
 }
 
 TEST_F(SmartcalcTest, Variable05) {
@@ -353,29 +418,45 @@ TEST_F(SmartcalcTest, Function01) {
 
   ret = sc.CalculateExpression("func(19) + 1 - 4 * func(16 - 3)");
   EXPECT_TRUE(ret);
-  EXPECT_DOUBLE_EQ(sc.Result(), -std::sin(19.0) + 1.0 - 4 * -std::sin(16.0 - 3.0));
+  EXPECT_DOUBLE_EQ(sc.Result(),
+                   -std::sin(19.0) + 1.0 - 4 * -std::sin(16.0 - 3.0));
+}
+
+TEST_F(SmartcalcTest, Function02) {
+  const char *expr = "-sin(x)";
+
+  bool ret = sc.SetFunction("12func", expr);
+  EXPECT_FALSE(ret);
+  EXPECT_EQ("'12func' is invalid name for a function", sc.ErrorMessage());
+}
+
+TEST_F(SmartcalcTest, Function03) {
+  const char *expr = "-sin(x)";
+
+  bool ret = sc.SetFunction("PI", expr);
+  EXPECT_FALSE(ret);
+  EXPECT_EQ("The name 'PI' is defined as the variable", sc.ErrorMessage());
 }
 
 TEST_F(SmartcalcTest, GetFuncNames) {
-	auto lst = sc.GetFuncNames();
-	for (auto it = lst.begin(); it != lst.end(); ++it) {
-		EXPECT_FALSE(it->empty());
-	}
+  auto lst = sc.GetFuncNames();
+  for (auto it = lst.begin(); it != lst.end(); ++it) {
+    EXPECT_FALSE(it->empty());
+  }
 }
 
 TEST_F(SmartcalcTest, GetVarNames) {
-	auto lst = sc.GetVarNames();
-	for (auto it = lst.begin(); it != lst.end(); ++it) {
-		EXPECT_FALSE(it->empty());
-	}
+  auto lst = sc.GetVarNames();
+  for (auto it = lst.begin(); it != lst.end(); ++it) {
+    EXPECT_FALSE(it->empty());
+  }
 }
 
 TEST_F(SmartcalcTest, GetPlot) {
-	auto vec = sc.GetPlot("sin", {-10.0, 10.0}, {-10.0, 10.0});
-	for (auto it = vec.begin(); it != vec.end(); ++it) {
-		//std::cout << it->first << "  " << it->second << "\n";
-		double a = it->first + it->second;
-		(void) a;
-	}
+  auto vec = sc.GetPlot("sin", {-10.0, 10.0}, {-10.0, 10.0});
+  for (auto it = vec.begin(); it != vec.end(); ++it) {
+    // std::cout << it->first << "  " << it->second << "\n";
+    double a = it->first + it->second;
+    (void)a;
+  }
 }
-

@@ -144,3 +144,34 @@ TEST_F(LexerTest, ExpressionTest04) {
   EXPECT_TRUE(lexer.Empty());
   EXPECT_EQ(i, sizeof(arr) / sizeof(std::string));
 }
+
+TEST_F(LexerTest, ExpressionTest05) {
+  Lexer lexer{"10 % 2"};
+  std::string arr[] = {std::to_string(10.0), "%", std::to_string(2.0)};
+
+  size_t i = 0;
+  for (; i < sizeof(arr) / sizeof(std::string) && !lexer.Empty(); ++i) {
+    AToken *token = lexer.NextToken();
+    EXPECT_EQ(arr[i], token->dump());
+    delete token;
+  }
+
+  EXPECT_TRUE(lexer.Empty());
+  EXPECT_EQ(i, sizeof(arr) / sizeof(std::string));
+}
+
+TEST_F(LexerTest, ExpressionTest06) {
+  Lexer lexer{"sqrt(2) - 11.5"};
+  std::string arr[] = {"sqrt", "(", std::to_string(2.0),
+                       ")",    "-", std::to_string(11.5)};
+
+  size_t i = 0;
+  for (; i < sizeof(arr) / sizeof(std::string) && !lexer.Empty(); ++i) {
+    AToken *token = lexer.NextToken();
+    EXPECT_EQ(arr[i], token->dump());
+    delete token;
+  }
+
+  EXPECT_TRUE(lexer.Empty());
+  EXPECT_EQ(i, sizeof(arr) / sizeof(std::string));
+}

@@ -12,15 +12,15 @@ QString Controller::CalculateExpression(QString expr)
     return model.СalculateExpression(std::move(expr));
 }
 
-const QStringList &Controller::GetFuncNames(void) const {
-    return model.getFuncNames();
+Controller::StringList Controller::GetFuncNames(void) const {
+    return model.GetFuncNames();
 }
 
 
-std::vector<std::pair<double, double>> Controller::getPlot(const QString &funcname,
-                                                           double emin, double emax,
-                                                           double dmin, double dmax) {
-    return model.getPlot(funcname, emin, emax, dmin, dmax);
+Controller::Plot Controller::GetPlot(const QString &funcname,
+                                     double dmin, double dmax,
+                                     double emin, double emax) {
+    return model.GetPlot(funcname, dmin, dmax, emin, emax);
 }
 
 CreditTable Controller::CalcCredit(double total, size_t term, double rate, bool isDifferentiated) const {

@@ -9,17 +9,17 @@
 class Controller
 {
 public:
+    using StringList = Model::StringList;
+    using Plot = Model::Plot;
+public:
     Controller(Model &model);
 
 public:
     QString CalculateExpression(QString expr);
-
-    std::vector<std::pair<double, double>> getPlot(const QString &funcname,
-                                                   double emin, double emax,
-                                                   double dmin, double dmax);
+    Plot GetPlot(const QString &funcname, double dmin, double dmax, double emin, double emax);
 
 public:
-    const QStringList &GetFuncNames(void) const;
+    StringList GetFuncNames(void) const;
     CreditTable CalcCredit(double total, size_t term, double rate, bool isDifferentiated) const;
 
 private:

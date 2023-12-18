@@ -6,10 +6,6 @@
 
 Model::Model()
 {
-    std::list<std::string> lst = sc.GetFuncNames();
-    for (auto it = lst.begin(); it != lst.end(); ++it) {
-        funcnames << it->c_str();
-    }
 }
 
 QString Model::СalculateExpression(QString expr) {
@@ -53,21 +49,21 @@ QString Model::СalculateExpression(QString expr) {
        if (sc.Error()) {
            return sc.ErrorMessage().c_str();
        }
-       funcnames << name;
-       funcnames.sort();
+       //funcnames << name;
+       //funcnames.sort();
        return QString("func ") + strlist.back() + QString(" defined");
    }
 }
 
-const QStringList &Model::getFuncNames() {
-    return funcnames;
+Model::StringList Model::GetFuncNames() const {
+    return sc.GetFuncNames();
 }
 
-std::vector<std::pair<double, double>> Model::getPlot(const QString &funcname,
-                                                      double emin, double emax,
-                                                      double dmin, double dmax)
+std::vector<std::pair<double, double>> Model::GetPlot(const QString &funcname,
+                                                      double dmin, double dmax,
+                                                      double emin, double emax)
 {
-    return sc.GetPlot(funcname.toLatin1(), {dmin, dmax}, {emin,emax});
+    return sc.GetPlots(funcname.toLatin1(), {dmin, dmax}, {emin,emax});
 }
 
 CreditTable Model::CalcAnnuityCredit(double total, size_t term, double rate) const {

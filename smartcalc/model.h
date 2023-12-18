@@ -10,24 +10,25 @@
 class Model
 {
 public:
+    using StringList = std::list<std::string>;
+    using Plot = std::vector<std::pair<double, double>>;
+public:
     Model();
 
 public:
     QString СalculateExpression(QString expr);
+    Plot GetPlot(const QString &funcname, double dmin, double dmax, double emin, double emax);
 
-    const QStringList &getFuncNames();
-    std::vector<std::pair<double, double>> getPlot(const QString &funcname,
-                                                   double emin, double emax,
-                                                   double dmin, double dmax);
+
     QString calcCredit(double total, unsigned int term, double rate, bool isDifferentiated);
 
 public:
+    StringList GetFuncNames() const;
     CreditTable CalcAnnuityCredit(double total, size_t term, double rate) const;
     CreditTable CalcDifferetiatedCredit(double total, size_t term, double rate) const;
 
 private:
     s21::Smartcalc sc;
-    QStringList funcnames;
 };
 
 #endif // MODEL_H

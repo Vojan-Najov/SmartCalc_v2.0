@@ -175,8 +175,8 @@ Smartcalc::Plot Smartcalc::GetPlot(const char *func,
   }
 
   const smartcalc::Rpn &rpn = funcs_[func];
-  size_t count = 5120;
-  double step = (d.second + d.first) / 2.0 / (double)count;
+  size_t count = 1.0e4;
+  double step = (d.second - d.first) / 2.0 / (double)count;
   if (step < 1.0e-6) {
     step = 1.0e-5;
   }
@@ -188,12 +188,12 @@ Smartcalc::Plot Smartcalc::GetPlot(const char *func,
     f.Calculate(x);
     double y = f.Result();
     if (f.Error() || std::isinf(y) ||
-        (std::fabs(y - y_prev) / step > 1.e5 &&
-         (y > e.second || y < e.first))) {
+        (std::fabs(y - y_prev) / step > 1.e3 * (d.second - d.first))) {
       y = std::nan("");
     }
 
     plot.emplace_back(x, y);
+    y_prev = y;
   }
 
   return plot;

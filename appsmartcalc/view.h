@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 #include <QListWidgetItem>
+#include <QValueAxis>
+#include <QChart>
+#include <QLineSeries>
 
 #include "controller.h"
 
@@ -29,6 +32,9 @@ private slots:
 
 private:
     bool CheckRanges(double dmin, double dmax, double emin, double emax) const;
+    void InitAxis(QValueAxis *axis, QString title, size_t tick_count, std::pair<double, double> range) const;
+    void InitChart(QChart *chart, QString title, QValueAxis *axisX, QValueAxis *axisY) const;
+    void AddSeriesToChart(QChart *chart, QLineSeries *series, QValueAxis *axisX, QValueAxis *axisY) const;
 
 private:
     Controller &controller;

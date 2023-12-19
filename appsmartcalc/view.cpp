@@ -1,10 +1,7 @@
+#include <QScrollBar>
+
 #include "view.h"
 #include "./ui_view.h"
-
-#include <QScrollBar>
-#include <QChart>
-#include <QLineSeries>
-
 #include "credit_table.h"
 
 View::View(Controller &controller, QWidget *parent)
@@ -70,25 +67,16 @@ void View::CalcChooseItem(QListWidgetItem *item)
     ui->calcLineEdit->setText(str);
 }
 
-bool View::CheckRanges(double dmin, double dmax, double emin, double emax) const
+void View::InitChart(QChart *chart, QString title, QValueAxis *axisX, QValueAxis *axisY) const
 {
-    if (!(dmin < dmax && emin < emax)) {
-        ui->statusbar->showMessage("Incorrect rages");
-        return false;
-    }
-    if (dmax - dmin > 100.0) {
-        ui->statusbar->showMessage("A range greater than 100 for the function definition area is not supported.");
-        return false;
-    }
-    if (emax - emin > 100.0) {
-        ui->statusbar->showMessage("A range greater than 100 for the function value area is not supported.");
-        return false;
-    }
-    return true;
+    chart->legend()->hide();
+    chart->setTitle(title);
+    chart->addAxis(axisX, Qt::AlignBottom);
+    chart->addAxis(axisY, Qt::AlignLeft);
 }
 
-void View::ConstructPlot(void)
-{
+
+void View::ConstructPlot(void) {
     ui->statusbar->clearMessage();
 
     QString funcname = ui->plotComboBox->currentText();
@@ -102,8 +90,14 @@ void View::ConstructPlot(void)
     }
 
     Plot plot = controller.GetPlot(funcname, dmin, dmax, emin, emax);
+
+    QValueAxis *axisX = new QValueAxis{};
+    InitAxis(axisX, "X", 11, {dmin, dmax});
+    QValueAxis *axisY = new QValueAxis{};
+    InitAxis(axisY, "Y", 11, {emin, emax});
+
     QChart *chart = new QChart{};
-    chart->legend()->hide();
+    InitChart(chart, funcname + "(x)", axisX, axisY);
 
     QLineSeries *series = new QLineSeries{};
     bool series_filled = false;
@@ -111,7 +105,7 @@ void View::ConstructPlot(void)
         double x = it->first, y = it->second;
         if (std::isnan(y)) {
             if (series_filled) {
-                chart->addSeries(series);
+                AddSeriesToChart(chart, series, axisX, axisY);
                 series = new QLineSeries{};
                 series_filled = false;
             }
@@ -121,14 +115,9 @@ void View::ConstructPlot(void)
         }
     }
     if (series_filled) {
-        chart->addSeries(series);
+        AddSeriesToChart(chart, series, axisX, axisY);
     }
-    chart->createDefaultAxes();
-    chart->axes(Qt::Horizontal).first()->setRange(dmin, dmax);
-    chart->axes(Qt::Horizontal).first()->setTitleText("X");
-    chart->axes(Qt::Vertical).first()->setRange(emin, emax);
-    chart->axes(Qt::Vertical).first()->setTitleText("Y");
-    chart->setTitle(funcname + "(x)");
+
     ui->graphicsView->setChart(chart);
 }
 
@@ -159,4 +148,34 @@ void View::Credit(void) {
     table->setItem(term, 0, new QTableWidgetItem(tab.GetStringTotalPayment()));
     table->setItem(term, 1, new QTableWidgetItem(tab.GetStringTotalPrincipalPayment()));
     table->setItem(term, 2, new QTableWidgetItem(tab.GetStringTotalInterestPayment()));
+}
+
+bool View::CheckRanges(double dmin, double dmax, double emin, double emax) const
+{
+    if (!(dmin < dmax && emin < emax)) {
+        ui->statusbar->showMessage("Incorrect rages");
+        return false;
+    }
+    if (dmax - dmin > 100.0) {
+        ui->statusbar->showMessage("A range greater than 100 for the function definition area is not supported.");
+        return false;
+    }
+    if (emax - emin > 100.0) {
+        ui->statusbar->showMessage("A range greater than 100 for the function value area is not supported.");
+        return false;
+    }
+    return true;
+}
+
+void View::InitAxis(QValueAxis *axis, QString title, size_t tick_count, std::pair<double, double> range) const
+{
+    axis->setTitleText(title);
+    axis->setTickCount(11);
+    axis->setRange(range.first, range.second);
+}
+
+void View::AddSeriesToChart(QChart *chart, QLineSeries *series, QValueAxis *axisX, QValueAxis *axisY) const {
+    chart->addSeries(series);
+    series->attachAxis(axisX);
+    series->attachAxis(axisY);
 }

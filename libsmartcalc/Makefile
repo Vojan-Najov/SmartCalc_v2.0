@@ -8,7 +8,7 @@ RMDIR = rm -rf
 RM = rm -f
 MKDIR = mkdir -p
 
-CXX_FLAGS = -Wall -Wextra -Werror -std=c++17 -O3
+CXX_FLAGS = -g -Wall -Wextra -Werror -std=c++17
 GCOV_FLAGS = -fprofile-arcs -ftest-coverage -g -O0
 TEST_LIBS = -lgtest
 

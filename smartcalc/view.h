@@ -24,11 +24,11 @@ public:
 private slots:
     void Calc(void);
     void CalcChooseItem(QListWidgetItem *item);
+    void ConstructPlot();
     void Credit(void);
 
-
-    void plot();
-
+private:
+    bool CheckRanges(double dmin, double dmax, double emin, double emax) const;
 
 private:
     Controller &controller;

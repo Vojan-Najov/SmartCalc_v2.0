@@ -18,7 +18,7 @@ View::View(Controller &controller, QWidget *parent)
     connect(ui->calcPushButton, &QPushButton::clicked, this, &View::Calc);
     connect(ui->calcLineEdit, &QLineEdit::returnPressed, this, &View::Calc);
     connect(ui->creditPushButton, &QPushButton::clicked, this, &View::Credit);
-    connect(ui->plotButton, &QPushButton::clicked, this, &View::plot);
+    connect(ui->plotButton, &QPushButton::clicked, this, &View::ConstructPlot);
     connect(ui->calcListWidget, &QListWidget::itemClicked, this, &View::CalcChooseItem);
 
     StringList lst = controller.GetFuncNames();
@@ -70,7 +70,24 @@ void View::CalcChooseItem(QListWidgetItem *item)
     ui->calcLineEdit->setText(str);
 }
 
-void View::plot()
+bool View::CheckRanges(double dmin, double dmax, double emin, double emax) const
+{
+    if (!(dmin < dmax && emin < emax)) {
+        ui->statusbar->showMessage("Incorrect rages");
+        return false;
+    }
+    if (dmax - dmin > 100.0) {
+        ui->statusbar->showMessage("A range greater than 100 for the function definition area is not supported.");
+        return false;
+    }
+    if (emax - emin > 100.0) {
+        ui->statusbar->showMessage("A range greater than 100 for the function value area is not supported.");
+        return false;
+    }
+    return true;
+}
+
+void View::ConstructPlot(void)
 {
     ui->statusbar->clearMessage();
 
@@ -80,8 +97,7 @@ void View::plot()
     double emin = ui->emin->value();
     double emax = ui->emax->value();
 
-    if (!(dmin < dmax && emin < emax)) {
-        ui->statusbar->showMessage("Incorrect rages");
+    if (!CheckRanges(dmin, dmax, emin, emax)) {
         return;
     }
 
@@ -96,7 +112,6 @@ void View::plot()
         if (std::isnan(y)) {
             if (series_filled) {
                 chart->addSeries(series);
-                chart->createDefaultAxes();
                 series = new QLineSeries{};
                 series_filled = false;
             }
@@ -107,11 +122,12 @@ void View::plot()
     }
     if (series_filled) {
         chart->addSeries(series);
-        chart->createDefaultAxes();
     }
-
+    chart->createDefaultAxes();
     chart->axes(Qt::Horizontal).first()->setRange(dmin, dmax);
+    chart->axes(Qt::Horizontal).first()->setTitleText("X");
     chart->axes(Qt::Vertical).first()->setRange(emin, emax);
+    chart->axes(Qt::Vertical).first()->setTitleText("Y");
     chart->setTitle(funcname + "(x)");
     ui->graphicsView->setChart(chart);
 }

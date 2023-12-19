@@ -5,27 +5,24 @@ RM = rm -f
 RMDIR = rm -rf
 MKDIR = mkdir -p
 
-CXX_FLAGS = -Wall -Wextra -Werror -std=c++17
-LIBS = -Llibsmartcalc -lsmartcalc
-INCLUDE = -Ilibsmartcalc/
+DIR_LIBSMARTCALC = libsmartcalc
+DIR_APPLICATION = smartcalc
 
-DIR_SRC = .
-DIR_MODEL = ${DIR_SRC}/model
-DIR_CONTROLLER = ${DIR_SRC}/controller
+all:
+	make -sC ${DIR_LIBSMARTCALC} all
+	cd ${DIR_APPLICATION} && cmake . && cmake --build .
 
-SRC_MODEL = $(wildcard ${DIR_MODEL}/*.cc)
-SRC_CONTROLLER = $(wildcard ${DIR_CONTROLLER}/*.cc)
+clean:
+	make -sC ${DIR_LIBSMARTCALC} clean
+	make -sC ${DIR_APPLICATION} clean
+	${RM} ${DIR_APPLICATION}/CMakeCache.txt 
+	${RMDIR} ${DIR_APPLICATION}/CMakeFiles
+	${RM} ${DIR_APPLICATION}/Makefile
+	${RM} ${DIR_APPLICATION}/cmake_install.cmake
+	${RMDIR} ${DIR_APPLICATION}/smartcalc.app
+	${RMDIR} ${DIR_APPLICATION}/smartcalc_autogen
+ 
+	 
+	
 
-
-model: smartcalc ${SRC_MODEL}
-	${CXX} ${CXX_FLAGS} ${INCLUDE} -o ${DIR_MODEL}/model.o \
-                                   -c ${SRC_MODEL}
-
-controller: model ${SRC_CONTROLLER}
-	${CXX} ${CXX_FLAGS} ${INCLUDE} -o ${DIR_CONTROLLER}/controller.o \
-                                   -c ${SRC_CONTROLLER}
-
-
-
-smartcalc:
-	make -sC libsmartcalc all
+.PHONY: all clean install uninstall dvi dist test

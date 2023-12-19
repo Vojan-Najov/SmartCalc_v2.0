@@ -338,6 +338,25 @@ TEST_F(SmartcalcTest, Expression37) {
   EXPECT_EQ(sc.ErrorMessage(), "parser: error near token (");
 }
 
+TEST_F(SmartcalcTest, Expression38) {
+  double result = std::fmod(2. * 4, 3.);
+  const char *expr = " 2 * 4 mod 3 ";
+
+  bool ret = sc.CalculateExpression(expr);
+  EXPECT_TRUE(ret);
+  EXPECT_DOUBLE_EQ(sc.Result(), result);
+}
+
+TEST_F(SmartcalcTest, Expression39) {
+  double result = 1 + std::pow(2., std::pow(3., 4.));
+  const char *expr = " 1 + 2 ^ 3 ^ 4";
+
+  bool ret = sc.CalculateExpression(expr);
+  EXPECT_TRUE(ret);
+  EXPECT_DOUBLE_EQ(sc.Result(), result);
+}
+
+
 TEST_F(SmartcalcTest, Variable01) {
   double result = 2. - 3. + 4. * 8.;
   const char *expr = "2 - 3 + 4 * 8";

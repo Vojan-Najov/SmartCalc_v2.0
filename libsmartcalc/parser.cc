@@ -271,8 +271,9 @@ AToken *Parser::ToRpnHandleNameToken(AToken *token, const VarMap &vars,
     return new RpnFuncToken{funcs_it->second};
   }
 
-  delete token;
-  return new WrongToken{tn->name};
+  token = new WrongToken{tn->name};
+  delete tn;
+  return token;
 }
 
 }  // namespace smartcalc

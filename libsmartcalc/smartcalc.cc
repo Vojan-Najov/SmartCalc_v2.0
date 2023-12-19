@@ -187,7 +187,9 @@ Smartcalc::Plot Smartcalc::GetPlot(const char *func,
     smartcalc::Rpn f{rpn};
     f.Calculate(x);
     double y = f.Result();
-    if (f.Error() || std::isinf(y) || (std::fabs(y - y_prev) / step) > 1.e10) {
+    if (f.Error() || std::isinf(y) ||
+        (std::fabs(y - y_prev) / step > 1.e5 &&
+         (y > e.second || y < e.first))) {
       y = std::nan("");
     }
 

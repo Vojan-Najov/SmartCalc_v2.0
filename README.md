@@ -18,8 +18,17 @@ Supports unary operators:
 - as well as functions: sine `sin`, cosine `cos`, tangent `tan`,
   arcsine `asin`, arcosine `acos`, arctangent `atan`, natural logarithm `ln`,
   decimal logarithm `log` and square root `sqrt`;
-- as well as an arbitrary number of parentheses `()`;
+- as well as an arbitrary number of parentheses `()`.
 
 * `make` to compile the library;
 * `test` to run unit tests;
-* `gcov_report` to get a coverage report;
+* `gcov_report` to get a coverage report.
+
+### Appsmartcalc
+
+GUI Application for the libsmartcalc library using the QT 6.2.3 framework.
+The application has three operating modes:
+- Calculator:
+  - Evaluate arithmetic expressions `expr`;
+  - Set variables `var varname = expr`;
+  - Define new functions `func funcname = expr`;

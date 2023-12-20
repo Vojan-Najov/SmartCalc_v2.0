@@ -20,6 +20,6 @@ Supports unary operators:
   decimal logarithm `log` and square root `sqrt`;
 - as well as an arbitrary number of parentheses `()`;
 
-- `make` to compile the library;
-- `test` to run unit tests;
-- `gcov_report` to get a coverage report;
+* `make` to compile the library;
+* `test` to run unit tests;
+* `gcov_report` to get a coverage report;

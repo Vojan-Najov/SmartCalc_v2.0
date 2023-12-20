@@ -35,7 +35,7 @@ The application has three operating modes:
   - To get the result, press the `Run` button or the `return` key \
    <img src="./docs/misc/sc_1.png" alt="sc_1" width="700"/>
 
-2. Plot: \
+2. Plot:
   - Select a function from the list;
   - Set the boundaries of the definition area and the value area;
   - Сlick the design button \

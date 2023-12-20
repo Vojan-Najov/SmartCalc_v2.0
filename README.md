@@ -44,3 +44,11 @@ The application has three operating modes:
 3. Credit
 -  The loan calculator allows you to calculate monthly payment,overpayment on credit, total payment 
    <img src="./docs/misc/sc_3.png" alt="sc_3" width="700"/>
+
+- `make` to build project;
+- `PREFIX="dirname/" make install" to install programm
+- `male uninstall` to uninstall
+- `make tests` to run unit-tests
+- `make clean` to clean project directory
+- `make dvi` to create a dvi project file
+- `make dist` to create project distributation

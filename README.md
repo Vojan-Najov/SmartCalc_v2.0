@@ -32,3 +32,4 @@ The application has three operating modes:
   - Evaluate arithmetic expressions `expr`;
   - Set variables `var varname = expr`;
   - Define new functions `func funcname = expr`;
+To get the result, press the run button or the return key.

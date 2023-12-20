@@ -28,7 +28,7 @@ Supports unary operators:
 
 GUI Application for the libsmartcalc library using the QT 6.2.3 framework.
 The application has three operating modes:
-1. Calculator: \
+1. Calculator:
   - Evaluate arithmetic expressions `expr`;
   - Set variables `var varname = expr`;
   - Define new functions `func funcname = expr`;

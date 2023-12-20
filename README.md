@@ -46,7 +46,7 @@ The application has three operating modes:
    <img src="./docs/misc/sc_3.png" alt="sc_3" width="700"/>
 
 - `make` to build project;
-- `PREFIX="dirname/" make install" to install programm
+- `PREFIX="dirname/" make install` to install programm
 - `male uninstall` to uninstall
 - `make tests` to run unit-tests
 - `make clean` to clean project directory

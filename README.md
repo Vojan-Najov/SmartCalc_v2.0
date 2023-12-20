@@ -43,5 +43,5 @@ The application has three operating modes:
 
 3. Credit
 - The loan calculator allows you to calculate monthly payment,
-  overpayment on credit, total payment. \ 
+  overpayment on credit, total payment \ 
     <img src="./docs/misc/sc_3.png" alt="sc_3" width="700"/>

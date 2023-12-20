@@ -33,11 +33,11 @@ The application has three operating modes:
   - Set variables `var varname = expr`;
   - Define new functions `func funcname = expr`;
   - To get the result, press the `Run` button or the `return` key \
-   <img src="./docs/misc/sc_1.png" alt="sc_1" width="700"/>
+    <img src="./docs/misc/sc_1.png" alt="sc_1" width="700"/>
 
 2. Plot:
   - Select a function from the list;
   - Set the boundaries of the definition area and the value area;
   - Сlick the design button \
-   <img src="./docs/misc/sc_2.png" alt="sc_2" width="700"/>
+    <img src="./docs/misc/sc_2.png" alt="sc_2" width="700"/>
 

@@ -38,6 +38,6 @@ The application has three operating modes:
 2. Plot:
   - Select a function from the list;
   - Set the boundaries of the definition area and the value area;
-  - Сlick the design button \
+  - Сlick the `draw` button \
     <img src="./docs/misc/sc_2.png" alt="sc_2" width="700"/>
 

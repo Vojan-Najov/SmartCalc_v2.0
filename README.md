@@ -28,13 +28,14 @@ Supports unary operators:
 
 GUI Application for the libsmartcalc library using the QT 6.2.3 framework.
 The application has three operating modes:
-1. Calculator:
+1. Calculator: \
   - Evaluate arithmetic expressions `expr`;
   - Set variables `var varname = expr`;
   - Define new functions `func funcname = expr`;
   - To get the result, press the `Run` button or the `return` key \
    <img src="./docs/misc/sc_1.png" alt="sc_1" width="700"/>
-2. Plot:
+
+2. Plot: \
   - Select a function from the list;
   - Set the boundaries of the definition area and the value area;
   - Сlick the design button \

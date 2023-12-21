@@ -16,16 +16,16 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Charts)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Charts)
 
 set(PROJECT_SOURCES
-        main.cpp
-        view.cpp
+        main.cc
+        view.cc
         view.h
         view.ui
         model.h
-        model.cpp
+        model.cc
         controller.h
-        controller.cpp
+        controller.cc
         credit_table.h
-        credit_table.cpp
+        credit_table.cc
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

@@ -2,10 +2,11 @@ TARGET = Smartcalc-v2.0
 DIST_NAME = Smartcalc-2.0
 
 CXX = g++
-RM = rm -f
 CP = cp -rf
+RM = rm -f
 RMDIR = rm -rf
 MKDIR = mkdir -p
+TARGZ = tar -czvf
 
 DIR_LIBSMARTCALC = libsmartcalc
 DIR_APPSMARTCALC = appsmartcalc
@@ -48,12 +49,12 @@ dist:
 	${CP} ${DIR_APPSMARTCALC}/*.h ${DIST_NAME}/${DIR_APPSMARTCALC}
 	${CP} ${DIR_APPSMARTCALC}/*.ui ${DIST_NAME}/${DIR_APPSMARTCALC}
 	${CP} ${DIR_APPSMARTCALC}/CMakeLists.txt ${DIST_NAME}/${DIR_APPSMARTCALC}
-
+	${TARGZ} ${DIST_NAME}.tar.gz ${DIST_NAME}
+	${RMDIR} ${DIST_NAME}
 
 
 clean:
 	make -sC ${DIR_LIBSMARTCALC} clean
-	make -sC ${DIR_APPSMARTCALC} clean
 	${RM} ${DIR_APPSMARTCALC}/CMakeCache.txt 
 	${RMDIR} ${DIR_APPSMARTCALC}/CMakeFiles
 	${RM} ${DIR_APPSMARTCALC}/Makefile

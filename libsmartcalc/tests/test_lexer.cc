@@ -52,7 +52,7 @@ TEST_F(LexerTest, HugeValueTest) {
   AToken *token = lexer.NextToken();
   EXPECT_EQ(token->type, TokenType::Wrong);
 
-  std::cout << static_cast<WrongToken *>(token)->errmsg << std::endl;
+  std::cerr << static_cast<WrongToken *>(token)->errmsg << std::endl;
 
   EXPECT_TRUE(lexer.Empty());
 

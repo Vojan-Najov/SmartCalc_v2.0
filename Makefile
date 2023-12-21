@@ -8,7 +8,7 @@ RMDIR = rm -rf
 MKDIR = mkdir -p
 
 DIR_LIBSMARTCALC = libsmartcalc
-DIR_APPLICATION = appsmartcalc
+DIR_APPSMARTCALC = appsmartcalc
 
 ifeq (${PREFIX},)
   PREFIX := ~
@@ -16,11 +16,11 @@ endif
 
 all:
 	make -sC ${DIR_LIBSMARTCALC} all
-	cd ${DIR_APPLICATION} && cmake -DCMAKE_CXX_COMPILER=g++ . && cmake --build .
+	cd ${DIR_APPSMARTCALC} && cmake -DCMAKE_CXX_COMPILER=g++ . && cmake --build .
 
 install: all
 	install -d ${DESTDIR}${PREFIX}
-	install -m 755 ${DIR_APPLICATION}/smartcalc.app/Contents/*/smartcalc \
+	install -m 755 ${DIR_APPSMARTCALC}/smartcalc.app/Contents/*/smartcalc \
                    ${DESTDIR}${PREFIX}/${TARGET}
 
 tests:
@@ -53,14 +53,19 @@ dist:
 
 clean:
 	make -sC ${DIR_LIBSMARTCALC} clean
-	make -sC ${DIR_APPLICATION} clean
-	${RM} ${DIR_APPLICATION}/CMakeCache.txt 
-	${RMDIR} ${DIR_APPLICATION}/CMakeFiles
-	${RM} ${DIR_APPLICATION}/Makefile
-	${RM} ${DIR_APPLICATION}/cmake_install.cmake
-	${RMDIR} ${DIR_APPLICATION}/smartcalc.app
-	${RMDIR} ${DIR_APPLICATION}/smartcalc_autogen
+	make -sC ${DIR_APPSMARTCALC} clean
+	${RM} ${DIR_APPSMARTCALC}/CMakeCache.txt 
+	${RMDIR} ${DIR_APPSMARTCALC}/CMakeFiles
+	${RM} ${DIR_APPSMARTCALC}/Makefile
+	${RM} ${DIR_APPSMARTCALC}/cmake_install.cmake
+	${RMDIR} ${DIR_APPSMARTCALC}/smartcalc.app
+	${RMDIR} ${DIR_APPSMARTCALC}/smartcalc_autogen
 	${RMDIR} ${DIST_NAME}
  
+format:
+	make -C ${DIR_LIBSMARTCALC} format
+	${CP} linters/.clang-format .
+	clang-format -i ${DIR_APPSMARTCALC}/*.h ${DIR_APPSMARTCALC}/*.cc
+	${RM} .clang-format
 
-.PHONY: all clean install uninstall dvi dist tests
+.PHONY: all clean install uninstall dvi dist tests format

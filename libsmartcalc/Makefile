@@ -1,6 +1,6 @@
 TARGET = libsmartcalc.a
 TEST = test
-REPORT = gcov_report
+REPORT = coverage
 
 CXX = g++
 AR = ar rcs
@@ -17,7 +17,7 @@ SRC_DIR = .
 OBJ_DIR = ${SRC_DIR}/obj
 TEST_SRC_DIR = $(SRC_DIR)/tests
 TEST_OBJ_DIR = $(OBJ_DIR)/tests
-GCOV_DIR = ${SRC_DIR}/gcov_report
+GCOV_DIR = ${SRC_DIR}/${REPORT}
 GCOV_OBJ_DIR = ${GCOV_DIR}/objs
 
 INCLUDE = $(wildcard ${INCLUDE_DIR}/*.h)
@@ -34,7 +34,7 @@ ${TARGET}: ${OBJ}
 
 ${TEST}: ${TARGET} ${TEST_OBJ}
 	${CXX} -o $@ ${TEST_OBJ} ${TARGET} ${TEST_LIBS} -I${INCLUDE_DIR}
-	./${TEST}
+	./${TEST} 2>/dev/null
 
 $(REPORT): ${GCOV_OBJ} ${TEST_OBJ}
 	${CXX} ${GCOV_FLAGS} -o ${TEST} $? ${TEST_LIBS}

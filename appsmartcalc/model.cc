@@ -1,112 +1,110 @@
 #include "model.h"
 
+#include <QDebug>
 #include <QString>
 #include <QStringList>
-#include <QDebug>
 
-Model::Model()
-{
-}
+Model::Model() {}
 
 QString Model::СalculateExpression(QString expr) {
-   if (!expr.contains("=")) {
-       sc.CalculateExpression(expr.toLatin1());
-       if (sc.Error()) {
-           return sc.ErrorMessage().c_str();
-       }
-       return QString::number(sc.Result(),'g', 6);
-   }
+  if (!expr.contains("=")) {
+    sc.CalculateExpression(expr.toLatin1());
+    if (sc.Error()) {
+      return sc.ErrorMessage().c_str();
+    }
+    return QString::number(sc.Result(), 'g', 6);
+  }
 
-   QStringList strlist = expr.split("=");
-   if (strlist.size() > 2) {
-       return "Error: no more than one assignment character is expected";
-   }
+  QStringList strlist = expr.split("=");
+  if (strlist.size() > 2) {
+    return "Error: no more than one assignment character is expected";
+  }
 
-   expr = strlist.back();
-   strlist = strlist.front().trimmed().split(" ", Qt::SkipEmptyParts);
-   if (strlist.size() != 2) {
-       return "Error: incorrect instruction";
-   }
+  expr = strlist.back();
+  strlist = strlist.front().trimmed().split(" ", Qt::SkipEmptyParts);
+  if (strlist.size() != 2) {
+    return "Error: incorrect instruction";
+  }
 
-   QString type = strlist.front();
-   if (type != "var" && type != "func") {
-       return QString("Error: unknown keyword ") + type;
-   }
+  QString type = strlist.front();
+  if (type != "var" && type != "func") {
+    return QString("Error: unknown keyword ") + type;
+  }
 
-   QString name = strlist.back();
-   if (!name[0].isLetter() && name[0].unicode() > 127) {
-       return QString("Error: '") + name + QString("' incorrect name of ") + type;
-   }
+  QString name = strlist.back();
+  if (!name[0].isLetter() && name[0].unicode() > 127) {
+    return QString("Error: '") + name + QString("' incorrect name of ") + type;
+  }
 
-   if (type == "var") {
-       sc.SetVariable(name.toLatin1(), expr.toLatin1());
-       if (sc.Error()) {
-           return sc.ErrorMessage().c_str();
-       }
-       return QString::number(sc.Result(),'g', 6);
-   } else {
-       sc.SetFunction(name.toLatin1(), expr.toLatin1());
-       if (sc.Error()) {
-           return sc.ErrorMessage().c_str();
-       }
-       return QString("func ") + strlist.back() + QString(" defined");
-   }
+  if (type == "var") {
+    sc.SetVariable(name.toLatin1(), expr.toLatin1());
+    if (sc.Error()) {
+      return sc.ErrorMessage().c_str();
+    }
+    return QString::number(sc.Result(), 'g', 6);
+  } else {
+    sc.SetFunction(name.toLatin1(), expr.toLatin1());
+    if (sc.Error()) {
+      return sc.ErrorMessage().c_str();
+    }
+    return QString("func ") + strlist.back() + QString(" defined");
+  }
 }
 
-Model::StringList Model::GetFuncNames() const {
-    return sc.GetFuncNames();
-}
+Model::StringList Model::GetFuncNames() const { return sc.GetFuncNames(); }
 
 std::vector<std::pair<double, double>> Model::GetPlot(const QString &funcname,
                                                       double dmin, double dmax,
-                                                      double emin, double emax)
-{
-    return sc.GetPlot(funcname.toLatin1(), {dmin, dmax}, {emin,emax});
+                                                      double emin,
+                                                      double emax) {
+  return sc.GetPlot(funcname.toLatin1(), {dmin, dmax}, {emin, emax});
 }
 
-CreditTable Model::CalcAnnuityCredit(double total, size_t term, double rate) const {
-    CreditTable table(term);
+CreditTable Model::CalcAnnuityCredit(double total, size_t term,
+                                     double rate) const {
+  CreditTable table(term);
 
-    double month_rate = rate / 100.0 / 12.0;
-    double annuity_factor = month_rate * std::pow((month_rate + 1.0), (double)term)
-                                       / (std::pow((month_rate + 1.0), (double)term) - 1.0);
-    double monthly_payment = annuity_factor * total;
+  double month_rate = rate / 100.0 / 12.0;
+  double annuity_factor = month_rate *
+                          std::pow((month_rate + 1.0), (double)term) /
+                          (std::pow((month_rate + 1.0), (double)term) - 1.0);
+  double monthly_payment = annuity_factor * total;
 
-    double saldo = total;
-    for (size_t i = 0; i < term; ++i) {
-        double interest_payment = saldo * month_rate;
-        double principal_payment = monthly_payment - interest_payment;
-        saldo = saldo * (1.0 + month_rate) - monthly_payment;
-        if (saldo < 0.0) saldo = 0.0;
+  double saldo = total;
+  for (size_t i = 0; i < term; ++i) {
+    double interest_payment = saldo * month_rate;
+    double principal_payment = monthly_payment - interest_payment;
+    saldo = saldo * (1.0 + month_rate) - monthly_payment;
+    if (saldo < 0.0) saldo = 0.0;
 
-        table.SetMonthlyPayment(i, monthly_payment);
-        table.SetPrincipalPayment(i, principal_payment);
-        table.SetInterestPayment(i, interest_payment);
-        table.SetBalanceOwed(i, saldo);
-    }
+    table.SetMonthlyPayment(i, monthly_payment);
+    table.SetPrincipalPayment(i, principal_payment);
+    table.SetInterestPayment(i, interest_payment);
+    table.SetBalanceOwed(i, saldo);
+  }
 
-    return table;
+  return table;
 }
 
-CreditTable Model::CalcDifferetiatedCredit(double total, size_t term, double rate) const {
-    CreditTable table(term);
+CreditTable Model::CalcDifferetiatedCredit(double total, size_t term,
+                                           double rate) const {
+  CreditTable table(term);
 
-    double month_rate = rate / 100.0 / 12.0;
-    double saldo = total;
-    double principal_payment = total / (double)term;
+  double month_rate = rate / 100.0 / 12.0;
+  double saldo = total;
+  double principal_payment = total / (double)term;
 
-    for (size_t i = 0; i < term; ++i) {
-        double interest_payment = saldo * month_rate;
-        double monthly_payment = principal_payment + interest_payment;
-        saldo -= principal_payment;
-        if (saldo < 0.0) saldo = 0.0;
+  for (size_t i = 0; i < term; ++i) {
+    double interest_payment = saldo * month_rate;
+    double monthly_payment = principal_payment + interest_payment;
+    saldo -= principal_payment;
+    if (saldo < 0.0) saldo = 0.0;
 
-        table.SetMonthlyPayment(i, monthly_payment);
-        table.SetPrincipalPayment(i, principal_payment);
-        table.SetInterestPayment(i, interest_payment);
-        table.SetBalanceOwed(i, saldo);
-    }
+    table.SetMonthlyPayment(i, monthly_payment);
+    table.SetPrincipalPayment(i, principal_payment);
+    table.SetInterestPayment(i, interest_payment);
+    table.SetBalanceOwed(i, saldo);
+  }
 
-    return table;
+  return table;
 }
-

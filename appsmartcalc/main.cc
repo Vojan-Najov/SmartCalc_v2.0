@@ -1,20 +1,19 @@
-#include "view.h"
-#include "model.h"
-#include "controller.h"
-
 #include <QApplication>
 
-int main(int argc, char *argv[])
-{
-    QLocale::setDefault(QLocale::c());
+#include "controller.h"
+#include "model.h"
+#include "view.h"
 
-    QApplication app(argc, argv);
+int main(int argc, char *argv[]) {
+  QLocale::setDefault(QLocale::c());
 
-    Model model{};
-    Controller controller{model};
-    View view{controller};
+  QApplication app(argc, argv);
 
-    view.show();
+  Model model{};
+  Controller controller{model};
+  View view{controller};
 
-    return app.exec();
+  view.show();
+
+  return app.exec();
 }

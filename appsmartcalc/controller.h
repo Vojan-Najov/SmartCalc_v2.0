@@ -3,27 +3,29 @@
 
 #include <QString>
 
-#include "model.h"
 #include "credit_table.h"
+#include "model.h"
 
-class Controller
-{
-public:
-    using StringList = Model::StringList;
-    using Plot = Model::Plot;
-public:
-    Controller(Model &model);
+class Controller {
+ public:
+  using StringList = Model::StringList;
+  using Plot = Model::Plot;
 
-public:
-    QString CalculateExpression(QString expr);
-    Plot GetPlot(const QString &funcname, double dmin, double dmax, double emin, double emax);
+ public:
+  Controller(Model &model);
 
-public:
-    StringList GetFuncNames(void) const;
-    CreditTable CalcCredit(double total, size_t term, double rate, bool isDifferentiated) const;
+ public:
+  QString CalculateExpression(QString expr);
+  Plot GetPlot(const QString &funcname, double dmin, double dmax, double emin,
+               double emax);
 
-private:
-    Model &model;
+ public:
+  StringList GetFuncNames(void) const;
+  CreditTable CalcCredit(double total, size_t term, double rate,
+                         bool isDifferentiated) const;
+
+ private:
+  Model &model;
 };
 
-#endif // CONTROLLER_H
+#endif  // CONTROLLER_H

@@ -356,7 +356,6 @@ TEST_F(SmartcalcTest, Expression39) {
   EXPECT_DOUBLE_EQ(sc.Result(), result);
 }
 
-
 TEST_F(SmartcalcTest, Variable01) {
   double result = 2. - 3. + 4. * 8.;
   const char *expr = "2 - 3 + 4 * 8";

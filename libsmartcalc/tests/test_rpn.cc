@@ -13,6 +13,7 @@ using NumberToken = s21::smartcalc::NumberToken;
 using UnaryOpToken = s21::smartcalc::UnaryOpToken;
 using BinaryOpToken = s21::smartcalc::BinaryOpToken;
 using FuncToken = s21::smartcalc::FuncToken;
+using RpnFuncToken = s21::smartcalc::RpnFuncToken;
 using WrongToken = s21::smartcalc::WrongToken;
 using VarToken = s21::smartcalc::VarToken;
 using TokenType = s21::smartcalc::TokenType;
@@ -128,4 +129,62 @@ TEST_F(RpnTest, Expression02) {
   bool ret = rpn.Calculate();
   EXPECT_TRUE(ret);
   EXPECT_EQ(rpn.Result(), result);
+}
+
+TEST_F(RpnTest, Error01) {
+  Rpn rpn;
+
+  rpn.Push(new UnaryOpToken{&s21::smartcalc::unary_ops::minus});
+
+  bool ret = rpn.Calculate();
+  EXPECT_FALSE(ret);
+  EXPECT_EQ(rpn.ErrorMessage(),
+            "Error: incorrect sequence of reverse polish notation");
+}
+
+TEST_F(RpnTest, Error02) {
+  Rpn rpn;
+
+  rpn.Push(new BinaryOpToken{&s21::smartcalc::binary_ops::sub});
+
+  bool ret = rpn.Calculate();
+  EXPECT_FALSE(ret);
+  EXPECT_EQ(rpn.ErrorMessage(),
+            "Error: incorrect sequence of reverse polish notation");
+}
+
+TEST_F(RpnTest, Error03) {
+  Rpn rpn;
+
+  rpn.Push(new NumberToken{3.0});
+  rpn.Push(new BinaryOpToken{&s21::smartcalc::binary_ops::sub});
+
+  bool ret = rpn.Calculate();
+  EXPECT_FALSE(ret);
+  EXPECT_EQ(rpn.ErrorMessage(),
+            "Error: incorrect sequence of reverse polish notation");
+}
+
+TEST_F(RpnTest, Error04) {
+  Rpn rpn;
+
+  rpn.Push(new FuncToken{&s21::smartcalc::funcs::sin});
+
+  bool ret = rpn.Calculate();
+  EXPECT_FALSE(ret);
+  EXPECT_EQ(rpn.ErrorMessage(),
+            "Error: incorrect sequence of reverse polish notation");
+}
+
+TEST_F(RpnTest, Error05) {
+  Rpn rpn_for_token;
+  rpn_for_token.Push(new NumberToken{3.0});
+
+  Rpn rpn;
+  rpn.Push(new RpnFuncToken{std::move(rpn_for_token)});
+
+  bool ret = rpn.Calculate();
+  EXPECT_FALSE(ret);
+  EXPECT_EQ(rpn.ErrorMessage(),
+            "Error: incorrect sequence of reverse polish notation");
 }

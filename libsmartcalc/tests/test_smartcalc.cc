@@ -456,6 +456,16 @@ TEST_F(SmartcalcTest, Function03) {
   EXPECT_EQ("The name 'PI' is defined as the variable", sc.ErrorMessage());
 }
 
+TEST_F(SmartcalcTest, Function04) {
+  const char *expr = "1 / x";
+
+  bool ret = sc.SetFunction("f", expr);
+
+  ret = sc.CalculateExpression("f(0)");
+  EXPECT_FALSE(ret);
+  EXPECT_EQ(sc.ErrorMessage(), "Error: devide by zero");
+}
+
 TEST_F(SmartcalcTest, GetFuncNames) {
   auto lst = sc.GetFuncNames();
   for (auto it = lst.begin(); it != lst.end(); ++it) {

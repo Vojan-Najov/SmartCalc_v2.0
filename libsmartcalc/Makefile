@@ -59,6 +59,7 @@ ${GCOV_OBJ_DIR}/%.o: ${SRC_DIR}/%.cc
 clean:
 	${RMDIR} ${OBJ_DIR}
 	${RMDIR} ${GCOV_DIR}
+	${RMDIR} test.dSYM
 	${RM} ${TARGET}
 	${RM} ${TEST}
 

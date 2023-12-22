@@ -193,6 +193,7 @@ bool Rpn::CalculateHandleBinaryOp(AToken *token,
 
 bool Rpn::CalculateHandleFunc(AToken *token,
                               std::stack<std::unique_ptr<AToken>> &stack) {
+  bool err_status = false;
   FuncToken *func = static_cast<FuncToken *>(token);
 
   if (stack.empty()) {
@@ -204,13 +205,17 @@ bool Rpn::CalculateHandleFunc(AToken *token,
   stack.pop();
 
   AToken *result = func->apply(static_cast<NumberToken *>(value.get()));
+  if (result->type == TokenType::Wrong) {
+    err_status = true;
+  }
   stack.emplace(result);
 
-  return false;
+  return err_status;
 }
 
 bool Rpn::CalculateHandleRpnFunc(AToken *token,
                                  std::stack<std::unique_ptr<AToken>> &stack) {
+  bool err_status = false;
   RpnFuncToken *func = static_cast<RpnFuncToken *>(token);
 
   if (stack.empty()) {
@@ -222,9 +227,12 @@ bool Rpn::CalculateHandleRpnFunc(AToken *token,
   stack.pop();
 
   AToken *result = func->apply(static_cast<NumberToken *>(value.get()));
+  if (result->type == TokenType::Wrong) {
+    err_status = true;
+  }
   stack.emplace(result);
 
-  return false;
+  return err_status;
 }
 
 /*
@@ -259,6 +267,7 @@ std::string RpnFuncToken::dump(void) const {
 AToken *RpnFuncToken::apply(const NumberToken *token) {
   rpn_.Calculate(token->value);
   if (rpn_.Error()) {
+    std::cout << rpn_.ErrorMessage() << std::endl;
     return new WrongToken{rpn_.ErrorMessage()};
   }
   return new NumberToken{rpn_.Result()};

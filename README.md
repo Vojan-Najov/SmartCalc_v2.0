@@ -47,7 +47,7 @@ The application has three operating modes:
 
 - `make` to build project;
 - `PREFIX="dirname/" make install` to install programm
-- `male uninstall` to uninstall
+- `make uninstall` to uninstall
 - `make tests` to run unit-tests
 - `make clean` to clean project directory
 - `make dvi` to create a dvi project file

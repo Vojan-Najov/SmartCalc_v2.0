@@ -5,6 +5,8 @@
 #include <array>
 #include <vector>
 
+namespace s21 {
+
 class CreditTable {
  public:
   CreditTable(size_t n);
@@ -35,5 +37,7 @@ class CreditTable {
  private:
   std::vector<std::array<double, 4>> tab;
 };
+
+}  // namespace s21
 
 #endif  // CREDITTABLE_H

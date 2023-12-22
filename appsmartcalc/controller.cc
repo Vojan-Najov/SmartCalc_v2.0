@@ -2,6 +2,8 @@
 
 #include <vector>
 
+namespace s21 {
+
 Controller::Controller(Model &model) : model(model) {}
 
 QString Controller::CalculateExpression(QString expr) {
@@ -24,3 +26,5 @@ CreditTable Controller::CalcCredit(double total, size_t term, double rate,
   }
   return model.CalcDifferetiatedCredit(total, term, rate);
 }
+
+}  // namespace s21

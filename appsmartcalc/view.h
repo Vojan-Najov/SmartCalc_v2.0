@@ -19,11 +19,11 @@ class View : public QMainWindow {
   Q_OBJECT
 
  public:
-  using StringList = Controller::StringList;
-  using Plot = Controller::Plot;
+  using StringList = s21::Controller::StringList;
+  using Plot = s21::Controller::Plot;
 
  public:
-  View(Controller &controller, QWidget *parent = nullptr);
+  View(s21::Controller &controller, QWidget *parent = nullptr);
   ~View();
 
  private slots:
@@ -42,7 +42,8 @@ class View : public QMainWindow {
                         QValueAxis *axisY) const;
 
  private:
-  Controller &controller;
+  s21::Controller &controller;
   Ui::View *ui;
 };
+
 #endif  // VIEW_H

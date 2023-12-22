@@ -6,6 +6,8 @@
 #include "credit_table.h"
 #include "model.h"
 
+namespace s21 {
+
 class Controller {
  public:
   using StringList = Model::StringList;
@@ -27,5 +29,7 @@ class Controller {
  private:
   Model &model;
 };
+
+}  // namespace s21
 
 #endif  // CONTROLLER_H

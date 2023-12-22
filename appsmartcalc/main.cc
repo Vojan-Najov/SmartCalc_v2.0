@@ -9,8 +9,8 @@ int main(int argc, char *argv[]) {
 
   QApplication app(argc, argv);
 
-  Model model{};
-  Controller controller{model};
+  s21::Model model{};
+  s21::Controller controller{model};
   View view{controller};
 
   view.show();

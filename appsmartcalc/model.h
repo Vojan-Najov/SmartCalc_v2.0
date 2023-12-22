@@ -7,6 +7,8 @@
 #include "credit_table.h"
 #include "smartcalc.h"
 
+namespace s21 {
+
 class Model {
  public:
   using StringList = std::list<std::string>;
@@ -32,5 +34,7 @@ class Model {
  private:
   s21::Smartcalc sc;
 };
+
+}  // namespace s21
 
 #endif  // MODEL_H

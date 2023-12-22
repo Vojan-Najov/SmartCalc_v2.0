@@ -1,5 +1,7 @@
 #include "credit_table.h"
 
+namespace s21 {
+
 CreditTable::CreditTable(size_t n) { tab.resize(n); }
 
 void CreditTable::SetMonthlyPayment(size_t idx, double value) {
@@ -79,3 +81,5 @@ double CreditTable::GetTotalInterestPayment(void) const {
 QString CreditTable::GetStringTotalInterestPayment(void) const {
   return QString::number(GetTotalInterestPayment(), 'f', 2);
 }
+
+}  // namespace s21

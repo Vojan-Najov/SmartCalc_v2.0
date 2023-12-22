@@ -4,6 +4,8 @@
 #include <QString>
 #include <QStringList>
 
+namespace s21 {
+
 Model::Model() {}
 
 QString Model::СalculateExpression(QString expr) {
@@ -108,3 +110,5 @@ CreditTable Model::CalcDifferetiatedCredit(double total, size_t term,
 
   return table;
 }
+
+}  // namespace s21

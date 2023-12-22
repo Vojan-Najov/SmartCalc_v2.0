@@ -5,7 +5,7 @@
 #include "./ui_view.h"
 #include "credit_table.h"
 
-View::View(Controller &controller, QWidget *parent)
+View::View(s21::Controller &controller, QWidget *parent)
     : QMainWindow(parent), controller(controller), ui(new Ui::View) {
   ui->setupUi(this);
   setWindowTitle("Smartcalc-v2.0");
@@ -132,7 +132,8 @@ void View::Credit(void) {
   table->clearContents();
   table->setRowCount(term + 1);
 
-  CreditTable tab = controller.CalcCredit(total, term, rate, isDifferentiated);
+  s21::CreditTable tab =
+      controller.CalcCredit(total, term, rate, isDifferentiated);
 
   for (int i = 0; i < term; ++i) {
     table->setItem(i, 0, new QTableWidgetItem(tab.GetStringMonthlyPayment(i)));

@@ -11,18 +11,18 @@ Calculator with MVC pattern.
 ### Libsmartcalc
 
 A library for calculating mathematical expressions in infix notation.
-Supports unary operators:
-- minus `-` and plus `+`;
+- Supports unary operators: minus `-` and plus `+`;
 - binary operators: addition `+`, subtraction `-`, multiplication `*`,
   division `\`, exponentiation `^` and remainder `mod`;
 - as well as functions: sine `sin`, cosine `cos`, tangent `tan`,
   arcsine `asin`, arcosine `acos`, arctangent `atan`, natural logarithm `ln`,
   decimal logarithm `log` and square root `sqrt`;
 - as well as an arbitrary number of parentheses `()`.
+- it also provides an interface for setting custom variables and defining custom functions from a single variable.
 
 * `make` to compile the library;
 * `test` to run unit tests;
-* `gcov_report` to get a coverage report.
+* `coverage` to get a coverage report (depends on lcov)
 
 ### Appsmartcalc
 

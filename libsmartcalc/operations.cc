@@ -92,6 +92,9 @@ AToken *multiply(const NumberToken *lhs, const NumberToken *rhs) {
 AToken *devide(const NumberToken *lhs, const NumberToken *rhs) {
   double numl = lhs->value;
   double numr = rhs->value;
+  if (std::fabs(numr) < 1.0e-7) {
+    return new WrongToken("Error: devide by zero");
+  }
   return new NumberToken{numl / numr};
 }
 

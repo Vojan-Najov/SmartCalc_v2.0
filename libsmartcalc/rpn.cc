@@ -85,6 +85,11 @@ bool Rpn::Calculate(void) {
       err_status = CalculateHandleRpnFunc(token.get(), stack);
     }
   }
+  if (err_status && !stack.empty()) {
+    WrongToken *wt = static_cast<WrongToken *>(stack.top().get());
+    errmsg_ = std::move(wt->errmsg);
+    return false;
+  }
   if (stack.empty()) {
     return CalculateError();
   }
@@ -118,7 +123,7 @@ void Rpn::Clear(void) { rpn_.clear(); }
 
 bool Rpn::CalculateError(void) {
   rpn_.clear();
-  errmsg_ = "incorrect token sequence";
+  errmsg_ = "Error: incorrect sequence of reverse polish notation";
   return false;
 }
 
@@ -141,7 +146,8 @@ bool Rpn::CalculateHandleUnaryOp(AToken *token,
   UnaryOpToken *unop = static_cast<UnaryOpToken *>(token);
 
   if (stack.empty()) {
-    CalculateError();
+    stack.emplace(
+        new WrongToken{"Error: incorrect sequence of reverse polish notation"});
     return true;
   }
 
@@ -156,17 +162,20 @@ bool Rpn::CalculateHandleUnaryOp(AToken *token,
 
 bool Rpn::CalculateHandleBinaryOp(AToken *token,
                                   std::stack<std::unique_ptr<AToken>> &stack) {
+  bool err_status = false;
   BinaryOpToken *binop = static_cast<BinaryOpToken *>(token);
 
   if (stack.empty()) {
-    CalculateError();
+    stack.emplace(
+        new WrongToken{"Error: incorrect sequence of reverse polish notation"});
     return true;
   }
   std::unique_ptr<AToken> rhs = std::move(stack.top());
   stack.pop();
 
   if (stack.empty()) {
-    CalculateError();
+    stack.emplace(
+        new WrongToken{"Error: incorrect sequence of reverse polish notation"});
     return true;
   }
   std::unique_ptr<AToken> lhs = std::move(stack.top());
@@ -174,9 +183,12 @@ bool Rpn::CalculateHandleBinaryOp(AToken *token,
 
   AToken *result = binop->apply(static_cast<NumberToken *>(lhs.get()),
                                 static_cast<NumberToken *>(rhs.get()));
+  if (result->type == TokenType::Wrong) {
+    err_status = true;
+  }
   stack.emplace(result);
 
-  return false;
+  return err_status;
 }
 
 bool Rpn::CalculateHandleFunc(AToken *token,
@@ -184,7 +196,8 @@ bool Rpn::CalculateHandleFunc(AToken *token,
   FuncToken *func = static_cast<FuncToken *>(token);
 
   if (stack.empty()) {
-    CalculateError();
+    stack.emplace(
+        new WrongToken{"Error: incorrect sequence of reverse polish notation"});
     return true;
   }
   std::unique_ptr<AToken> value = std::move(stack.top());
@@ -201,7 +214,8 @@ bool Rpn::CalculateHandleRpnFunc(AToken *token,
   RpnFuncToken *func = static_cast<RpnFuncToken *>(token);
 
   if (stack.empty()) {
-    CalculateError();
+    stack.emplace(
+        new WrongToken{"Error: incorrect sequence of reverse polish notation"});
     return true;
   }
   std::unique_ptr<AToken> value = std::move(stack.top());

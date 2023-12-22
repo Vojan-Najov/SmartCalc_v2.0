@@ -33,7 +33,7 @@ ${TARGET}: ${OBJ}
 	${AR} $@ $?
 
 ${TEST}: ${TARGET} ${TEST_OBJ}
-	${CXX} -o $@ ${TEST_OBJ} ${TARGET} ${TEST_LIBS} -I${INCLUDE_DIR}
+	${CXX} ${CXX_FLAGS} -o $@ ${TEST_OBJ} ${TARGET} ${TEST_LIBS} -I${INCLUDE_DIR}
 	./${TEST} 2>/dev/null
 
 $(REPORT): ${GCOV_OBJ} ${TEST_OBJ}

@@ -267,7 +267,6 @@ std::string RpnFuncToken::dump(void) const {
 AToken *RpnFuncToken::apply(const NumberToken *token) {
   rpn_.Calculate(token->value);
   if (rpn_.Error()) {
-    std::cout << rpn_.ErrorMessage() << std::endl;
     return new WrongToken{rpn_.ErrorMessage()};
   }
   return new NumberToken{rpn_.Result()};

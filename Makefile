@@ -62,6 +62,7 @@ clean:
 	${RMDIR} ${DIR_APPSMARTCALC}/smartcalc.app
 	${RMDIR} ${DIR_APPSMARTCALC}/smartcalc_autogen
 	${RMDIR} ${DIST_NAME}
+	${RM} smartcalc.dvi smartcalc.pdf
  
 format:
 	make -C ${DIR_LIBSMARTCALC} format

@@ -97,38 +97,35 @@ Bracketed arithmetic expressions in infix notation must support the following ar
 @node Usage
 @chapter Usage
 
-
-Libsmartcalc
+@itemize *
+@item Libsmartcalc
 
 @itemize -
 @item A library for calculating mathematical expressions in infix notation.
 @item Supports unary operators:
-@itemize -
+@enumerate
 @item minus `-` and plus `+`;
 @item binary operators: addition `+`, subtraction `-`, multiplication `*`, division `\`, exponentiation `^` and remainder `mod`;
 @item as well as functions: sine `sin`, cosine `cos`, tangent `tan`,
 @item arcsine `asin`, arcosine `acos`, arctangent `atan`, natural logarithm `ln`,
 @item decimal logarithm `log` and square root `sqrt`;
 @item as well as an arbitrary number of parentheses `()`.
-@end itemize
-
-@itemize -
+@end enumerate
 @item `make` to compile the library;
 @item `test` to run unit tests;
 @item `gcov_report` to get a coverage report.
-@end itemize
 
-Appsmartcalc
+@item Appsmartcalc
 
 @itemize -
 @item GUI Application for the libsmartcalc library using the QT 6.2.3 framework.
 @item The application has three operating modes:
 @item Calculator:
 @itemize -
-@item  Evaluate arithmetic expressions `expr`;
-@item  Set variables `var varname = expr`;
-@item  Define new functions `func funcname = expr`;
-@item  To get the result, press the `Run` button or the `return` key
+@item  Evaluate arithmetic expressions "expr";
+@item  Set variables "var varname = expr";
+@item  Define new functions "func funcname = expr";
+@item  To get the result, press the 'Run' button or the 'return' key
 @end itemize
 @image{./docs/misc/sc_1,400pt,200pt,,.eps}
 
@@ -145,6 +142,7 @@ Appsmartcalc
 @item The loan calculator allows you to calculate monthly payment,overpayment on credit, total payment 
 @end itemize
 @image{./docs/misc/sc_3,400pt,200pt,,.eps}
+@end itemize
 @end itemize
 
 @bye
